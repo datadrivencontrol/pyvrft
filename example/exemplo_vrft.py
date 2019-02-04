@@ -6,7 +6,7 @@ from vrft import vrft
 N=1000
 
 # Input signal
-u=np.zeros(N)
+u=np.zeros((N,1))
 u[2]=1
 u[202]=1
 u[402]=1
