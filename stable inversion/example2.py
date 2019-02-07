@@ -9,14 +9,15 @@ Testing the inversion algorithm on a MIMO system
 #%%Header: import python libraries
 
 import numpy as np # important package for scientific computing: important array features
-import scipy.signal as sig # signal processing librarie
-import matplotlib.pyplot as plt # librarie to plot graphics
+import scipy.signal as sig # signal processing library
+import matplotlib.pyplot as plt # library to plot graphics
 
-import invfunc # import the function from the file invfunc
+import invfunc # import the functions from the file invfunc.py
 
-#%% First step: defining the MIMO system that we want to invert:
-# the system will be defined in the state-space representation
-# we'll use model that is similar to the pilot plant model
+#%% First step: defining the MIMO system that we want to apply the algorithm
+
+# for now, the system will be defined in the state-space representation
+# in this file, there is some examples of systems to test the algorithm
 
 # SYSTEM 1
 # dynamic system matrix
@@ -102,7 +103,7 @@ plt.xlabel('time (t)')
 plt.ylabel('u(t)')
 plt.show()
 
-#%% Simulating the linear system described in the paper
+#%% Simulating the linear system
 
 # pre-allocating the variables
 x=np.zeros((n,N)) # for simplicity, we'll consider x(0)=0
@@ -135,8 +136,3 @@ plt.grid(True)
 plt.xlabel('time (t)')
 plt.ylabel('uhat(t)')
 plt.show()
-
-# comparing the real input vector with the calculated by the inverse algorithm
-#Nn=np.shape(uhat)[1]
-#err=np.sum((uhat-u[:,0:Nn])**2)
-#print(err)
