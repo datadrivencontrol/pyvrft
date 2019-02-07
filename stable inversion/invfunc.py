@@ -10,6 +10,7 @@ Functions that are used to implement the algorithm proposed on the paper: Stable
 
 import numpy as np #important package for scientific computing: it has important array features
 import scipy.linalg as scilin #importing linear algebra functions from scipy - another important package for scientific computation
+import scipy.signal as signal #signal processing library
 
 #%% Function that does the reduction of the system
 
@@ -258,3 +259,63 @@ def stblinvlinsys(A,B,C,D,y,t):
             uhat[:,k+1]=Cinv@xhat[:,k+1]+Dinv@yhat[:,k+1]
                 
     return uhat,tt
+
+#%% Function that does the transformation of a MIMO transfer function process in a state-space model
+# IMPORTANT: This is a simple algorithm that does not produce a minimal realization!
+
+def dmimo_tf2ss(G):
+    
+    # calculating the number of outputs
+    p=len(G)
+    # calculating the number of inputs
+    m=len(G[0])
+
+    # creating a list for each matrix
+    A=[];B=[];C=[];D=[]
+
+    nss=0
+    # loop that get the SISO state-space transformations
+    for i in range(0, p):
+        # outputs - first index of the MIMO process list
+        A.append([]);B.append([]);C.append([]);D.append([])
+        for j in range(0, m):
+            # inputs - second index of the MIMO process list
+            if (G[i][j]!=0):
+                #transform the individual SISO systems to a state-space model
+                Aij,Bij,Cij,Dij=signal.tf2ss(G[i][j].num, G[i][j].den)
+                #calculate the size of the A matrix
+                nss=nss+Aij.shape[0]
+                #organizing the matrices iin a list
+                A[i].append(Aij);B[i].append(Bij);C[i].append(Cij);D[i].append(Dij)
+            else:
+                A[i].append([]);B[i].append([]);C[i].append([]);D[i].append([])
+
+    # pre-allocation of the system's matrix
+    Ass=np.zeros((nss,nss))
+    Bss=np.zeros((nss,m))
+    Css=np.zeros((p,nss))
+    Dss=np.zeros((p,m))
+    # counters
+    ct=0
+
+    # loop that organize the MIMO list obtained above on the state-space model
+    for i in range(0, p):    
+        # loop on the outputs
+        for j in range(0, m):
+            # loop on the inputs
+            #test if the matrix isn't zero
+            if len(A[i][j])>0:
+                # calculate the size of the dynamic matrix
+                nij=A[i][j].shape[0]
+                # organizing the dynamic matrix
+                Ass[ct:ct+nij,ct:ct+nij]=A[i][j]
+                # organizing the input matrix
+                Bss[ct:ct+nij,j]=B[i][j]
+                # organizing the output matrix
+                Css[i,ct:ct+nij]=C[i][j]
+                # organizing the feedforward matrix
+                Dss[i,j]=D[i][j]
+                # incremets the counter
+                ct=ct+nij
+                
+    return Ass,Bss,Css,Dss
