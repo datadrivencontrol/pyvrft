@@ -84,12 +84,12 @@ def vrft_mimo(u,y1,y2,Td,C,L):
         E2.append([])
         for j in range (0,n):
             if len(C[i][j])>0:
-                E1[i].append([filtra(C[i][j],e1[:,j:j+1])])
-                E2[i].append([filtra(C[i][j],e2[:,j:j+1])])
+                E1[i].append( filtra(C[i][j],e1[:,j:j+1]) )
+                E2[i].append( filtra(C[i][j],e2[:,j:j+1]) )
                 parametros=parametros+len(C[i][j]);
             else:
-                E1[i].append([])
-                E2[i].append([])
+                E1[i].append( np.empty(shape=(0,0)) )
+                E2[i].append( np.empty(shape=(0,0)) )
                 
     #print('Total de parametros',parametros)
     #print('E1',E1)
@@ -105,10 +105,10 @@ def vrft_mimo(u,y1,y2,Td,C,L):
         EE1=np.zeros((N,parametros))
         EE2=np.zeros((N,parametros))
         for j in range (0,n):
-            if len(E1[i][j])>0:
-                par=E1[i][j][0].shape[1]
-                EE1[:,total:total+par]=E1[i][j][0] # monta [phi_i(1) phi_i(2)... phi_i(N); 0 0 ... 0 ]^T
-                EE2[:,total:total+par]=E2[i][j][0]
+            if E1[i][j].shape[1]>0:
+                par=E1[i][j].shape[1]
+                EE1[:,total:total+par]=E1[i][j] # monta [phi_i(1) phi_i(2)... phi_i(N); 0 0 ... 0 ]^T
+                EE2[:,total:total+par]=E2[i][j]
             else:
                 par=0
             total=total+par
@@ -122,7 +122,7 @@ def vrft_mimo(u,y1,y2,Td,C,L):
 
     # Compute controller parameters
     p=np.dot(np.linalg.inv(Z),Y)
-    return p        
+    return p     
         
         
 #p=vrft_mimo(u,y,y,T,C,T)
