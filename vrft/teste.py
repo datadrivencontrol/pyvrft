@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov 22 17:45:33 2018
-
-@author: diego
+@authors: Diego Eckhard and Emerson Boeira
 """
 
 from scipy import signal
@@ -41,7 +40,6 @@ def filtra(G,u):
                 y[:,i]=y[:,i]+v[:,0]
     return y
 
-
 def filtra_all(G,u):
     
     if (G!=0):
@@ -57,66 +55,6 @@ def filtra_all(G,u):
         
         return np.zeros(np.shape(u))
 
-
-
-
-
-G1 = signal.TransferFunction([0, 1],[1, -0.9],dt=1)
-G2 = 0
-
-G3 = 0
-G4 = signal.TransferFunction([0, 1],[1, -0.9],dt=1)
-
-G=[[G1 , G2],[G3, G4]]
-
-
-
-
-T1 = signal.TransferFunction([0, 0.1],[1, -0.8],dt=1)
-T2 = 0
-T3 = 0
-T4 = signal.TransferFunction([0, 0.1],[1, -0.8],dt=1)
-
-
-T=[[T1 , T2],[T3, T4]]
-
-
-
-
-L=T
-
-
-Cp=[[signal.TransferFunction([1],[1],dt=1)]]
-
-Cpi=[  [signal.TransferFunction([1, 0],[1, -1],dt=1)] ,
-       [signal.TransferFunction([0, 1],[1, -1],dt=1)] ]
-
-
-C = [ [ Cp , [] ],
-      [ [] , Cp ]  ]
-
-
-
-
-u1=np.zeros((10,1))
-u1[0]=1
-
-u2=np.zeros((10,1))
-u2[1]=1
-
-u=np.concatenate((u1,u2),1)
-
-
-
-y=filtra(G,u)
-#e = np.random.randn(10,2)/100
-#y=y+e
-
-
-
-
-
- 
 def vrft_mimo(u,y1,y2,Td,C,L):
 
     N=len(u);
@@ -152,64 +90,42 @@ def vrft_mimo(u,y1,y2,Td,C,L):
             else:
                 E1[i].append([])
                 E2[i].append([])
-
-
-    print('Total de parametros',parametros)
-    print('E1',E1)
-
-
-    return E1
+                
+    #print('Total de parametros',parametros)
+    #print('E1',E1)
+     
+    #return E1
     total=0
-    
 
     # Filter signals and make ZY matrices
-    Z=np.zeros((parametros,parametros));
-    Y=np.zeros((parametros,1));
-    for i in range (0,n):
-
-        
-        EE1=np.zeros((len(u),parametros))
-        EE2=np.zeros((len(u),parametros))
-
-        
-        
-        for j in range (0,n):
-
-            par=np.shape(E1[(n*i)+j])[1]
-            
-            #k1=filtra_all(L[i][j],E1[(n*i)+j])
-            #k2=filtra_all(L[i][j],E2[(n*i)+j])
-            
-            #print('k1',k1)
-            
-            #EE1[:,total:total+par]=k1[:,0:par];
-            #EE2[:,total:total+par]=k2[:,0:par];
-
-            EE1[:,total:total+par]=E1[(n*i)+j];
-            EE2[:,total:total+par]=E2[(n*i)+j];
-
-
-
-            total=total+par
-            
-            print(total)
+    Z=np.zeros((parametros,parametros))
+    Y=np.zeros((parametros,1))
     
-        
-        Z=Z+np.dot(EE1.T,EE2);
-        Y=Y+np.dot(EE1.T,u[:,i:i+1]);
+    for i in range (0,n):    
+        EE1=np.zeros((N,parametros))
+        EE2=np.zeros((N,parametros))
+        for j in range (0,n):
+            if len(E1[i][j])>0:
+                par=E1[i][j][0].shape[1]
+                EE1[:,total:total+par]=E1[i][j][0] # monta [phi_i(1) phi_i(2)... phi_i(N); 0 0 ... 0 ]^T
+                EE2[:,total:total+par]=E2[i][j][0]
+            else:
+                par=0
+            total=total+par
+            print(total)
+        Z=Z+np.dot(EE1.T,EE2)
+        Y=Y+np.dot(EE1.T,u[:,i:i+1])
 
 
-    print('Matriz Z',Z)
-    print('Matriz Y',Y)
+    #print('Matriz Z',Z)
+    #print('Matriz Y',Y)
 
     # Compute controller parameters
-    p=np.dot(np.linalg.inv(Z),Y);
-    return p
-
+    p=np.dot(np.linalg.inv(Z),Y)
+    return p        
         
         
-        
-p=vrft_mimo(u,y,y,T,C,T)
+#p=vrft_mimo(u,y,y,T,C,T)
 
 #print(p)
 
