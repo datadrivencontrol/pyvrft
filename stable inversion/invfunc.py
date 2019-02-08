@@ -310,9 +310,9 @@ def dmimo_tf2ss(G):
                 # organizing the dynamic matrix
                 Ass[ct:ct+nij,ct:ct+nij]=A[i][j]
                 # organizing the input matrix
-                Bss[ct:ct+nij,j]=B[i][j]
+                Bss[ct:ct+nij,j]=B[i][j][:,0]
                 # organizing the output matrix
-                Css[i,ct:ct+nij]=C[i][j]
+                Css[i,ct:ct+nij]=C[i][j][0,:]
                 # organizing the feedforward matrix
                 Dss[i,j]=D[i][j]
                 # incremets the counter
