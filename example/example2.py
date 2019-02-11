@@ -12,7 +12,7 @@ import numpy as np # important package for scientific computing: important array
 import scipy.signal as sig # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
 
-import invfunc # import the functions from the file invfunc.py
+from vrft import invfunc # import the functions from the file invfunc.py
 
 #%% First step: defining the MIMO system that we want to apply the algorithm
 

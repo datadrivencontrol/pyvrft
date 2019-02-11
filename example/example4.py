@@ -11,8 +11,8 @@ Testing the inversion algorithm on a MIMO system and the transformation of a MIM
 import numpy as np # important package for scientific computing: important array features
 import scipy.signal as signal # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
-import invfunc # import the function from the file invfunc.py
-from vrft import teste # import functions of the teste.py file
+from vrft import invfunc # import the function from the file invfunc.py
+from vrft import control # import functions of the teste.py file
 
 #%% First step: defining the MIMO system
 

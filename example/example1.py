@@ -12,7 +12,7 @@ import numpy as np #important package for scientific computing: it has important
 import scipy.signal as sig # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
 
-import invfunc # import the functions from the file invfunc.py
+from vrft import invfunc # import the functions from the file invfunc.py
 
 #%% First step: defining the system that we want to apply the algorithm
 # the SISO system will be defined in a transfer function representation
