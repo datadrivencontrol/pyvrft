@@ -4,29 +4,14 @@
 Created on Thu Nov 22 17:45:33 2018
 @authors: Diego Eckhard and Emerson Boeira
 """
+#%% Header: import libraries
 
 from scipy import signal
 import numpy as np
+from stable_inversion import invfunc
 
-
-def inverte(G):
-    return 0
-    
-    
-AA=np.array([[0.9, 0],[1, 0.9]])
-BB=np.array([[1],[0]])
-CC=np.array([[1, 0]])
-DD=np.array([[1]])
-
-GG=signal.StateSpace(AA,BB,CC,DD,dt=1)
-  
-
-u1=np.zeros((10,1))
-u1[1]=1
-
-tt,yy,xx=signal.dlsim(GG,u1)
-  
-    
+#%% Functions
+   
 def filtra(G,u):
     
     n=len(G)
@@ -57,17 +42,38 @@ def filtra_all(G,u):
 
 def vrft_mimo(u,y1,y2,Td,C,L):
 
-    N=len(u);
-    n=len(Td);
+    # number of data samples
+    N=len(u)
+    # number of inputs/outputs of the system
+    n=len(Td)
+    # creates a dummy time vector, necessary for the function that calculates the virtual reference
+    t=np.linspace(0,N-1,N) #linspace(start,stop,numberofpoints)
+    # pushing the vector to have the specified dimensions
+    t.shape=(1,N)
     
     # Filter u
-#    u=filtra(L,u);
-    u=filtra(L,u);
+    #u=filtra(L,u);
+    #u=filtra(L,u);
     
-    # Compute virtual error and filter S=(eye(n)-Td);
-    e1=y1-filtra(Td,y1);
-    e2=y2-filtra(Td,y2);
- 
+    # transformation of Td from the MIMO transfer function list structure to a state-space model
+    Atd,Btd,Ctd,Dtd=invfunc.dmimo_tf2ss(Td)
+    # calculates the virtual error for the first data set
+    r1v,_=invfunc.stblinvlinsys(Atd,Btd,Ctd,Dtd,y1.T,t)
+    r1v=r1v.T
+    # calculates the virtual error for the second data set (instrumental variable)
+    r2v,_=invfunc.stblinvlinsys(Atd,Btd,Ctd,Dtd,y2.T,t)
+    r2v=r2v.T
+    # remove the last samples of y, to match the dimension of the virtual reference
+    nrv=r1v.shape[0]
+    y1=y1[0:nrv,:]
+    y2=y2[0:nrv,:]
+    # virtual error
+    e1=r1v-y1
+    e2=r2v-y2
+    # compute the new size of the data (after the system inversion)
+    N=len(e1)
+    # remove the last samples of the input (to match the dimension of the virtual error)
+    u=u[0:nrv,:] 
     
     # Filter Signals 
     # E1 normal experiment
