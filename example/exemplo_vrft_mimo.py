@@ -11,7 +11,7 @@ Testing the vrft function on a example
 import numpy as np #important package for scientific computing: it has important array features
 from scipy import signal #signal processing librarie
 import matplotlib.pyplot as plt #librarie to plot graphics
-from vrft import teste # implementatio of vrft and some filtering functions
+from vrft import teste # implementation of vrft and some filtering functions
 
 #%% First step: defining the process model, the noise model, the reference model, and the controller class
 
@@ -51,7 +51,7 @@ C = [[Cpi,[]],[[],Cpi]] # in this scenario, we choosed a descentralized PI contr
 #%% Simulating the open loop system to obtain the data for the VRFT
 
 # samples of the input signal
-N=10
+N=350
 # discrete time vector of the simulation
 t=np.linspace(0,N-1,N) #linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
@@ -107,3 +107,4 @@ plt.ylabel('y(t)')
 plt.show()
 
 p=teste.vrft_mimo(u,y,y,Td,C,L)
+print(p)
