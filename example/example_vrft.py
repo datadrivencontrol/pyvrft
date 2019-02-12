@@ -11,7 +11,7 @@ Testing the vrft function on a example
 import numpy as np #important package for scientific computing: it has important array features
 from scipy import signal #signal processing librarie
 import matplotlib.pyplot as plt #librarie to plot graphics
-from vrft import control # implementation of vrft and some filtering functions
+import vrft # implementation of vrft and some filtering functions
 
 #%% First step: defining the process model, the noise model, the reference model, and the controller class
 
@@ -80,7 +80,7 @@ plt.ylabel('u(t)')
 plt.show()
 
 # calculating the output of the MIMO system
-yu=teste.filtra(G,u)
+yu=vrft.filter(G,u)
 # add noise to the output
 # variance of the whie noise signals
 sigma2_e1=0
@@ -94,7 +94,7 @@ w2.shape=(N,1)
 # concatenating noise signals
 w=np.concatenate((w1,w2),axis=1)
 # filtering the white noise
-v=teste.filtra(H,w)
+v=vrft.filter(H,w)
 # real output
 y=yu+v;
 
@@ -106,5 +106,5 @@ plt.xlabel('time (t)')
 plt.ylabel('y(t)')
 plt.show()
 
-p=control.vrft_mimo(u,y,y,Td,C,L)
+p=vrft.design(u,y,y,Td,C,L)
 print(p)

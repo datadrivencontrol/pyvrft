@@ -11,8 +11,7 @@ Function used to implement the transformation from a MIMO transfer function mode
 import numpy as np #important package for scientific computing: it has important array features
 from scipy import signal #signal processing library
 import matplotlib.pyplot as plt #library to plot graphics
-from vrft import control # implementation of vrft and some filtering functions
-from vrft import invfunc # import the functions
+import vrft # import vrft
 
 #%% Defining the system in the transfer function list structure (as we have been working)
 
@@ -28,7 +27,7 @@ G=[[G11,G12],[G21,G22]]
 # %% TESTING THE IMPLEMENTATION OF THE FUNCTION
 
 # using the function
-Ass,Bss,Css,Dss=invfunc.dmimo_tf2ss(G)
+Ass,Bss,Css,Dss=vrft.dmimo_tf2ss(G)
             
 #%% Test if the both systems are equivalent
 
@@ -54,7 +53,7 @@ u2=signal.gausspulse(t,fc=0.002).T
 u=np.concatenate((u1,u2),axis=1)
 
 # calculating the output of the MIMO system by the filtering option: TRANSFER FUNCTION MODEL
-yg=control.filtra(G,u)
+yg=vrft.filter(G,u)
 # calculating the output of the MIMO system by the simulation of the STATE-SPACE MODEL
 # calculating the number of outputs
 p=len(G)
