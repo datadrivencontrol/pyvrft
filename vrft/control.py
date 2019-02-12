@@ -90,22 +90,18 @@ def design(u,y1,y2,Td,C,L):
         E2.append([])
         for j in range (0,n):
             if len(C[i][j])>0:
-                E1[i].append( filtra(C[i][j],e1[:,j:j+1]) )
-                E2[i].append( filtra(C[i][j],e2[:,j:j+1]) )
+                E1[i].append( filter(C[i][j],e1[:,j:j+1]) )
+                E2[i].append( filter(C[i][j],e2[:,j:j+1]) )
                 parametros=parametros+len(C[i][j]);
             else:
                 E1[i].append( np.empty(shape=(0,0)) )
                 E2[i].append( np.empty(shape=(0,0)) )
                 
-    #print('Total de parametros',parametros)
-    #print('E1',E1)
-     
-    #return E1
-    total=0
 
     # Filter signals and make ZY matrices
     Z=np.zeros((parametros,parametros))
     Y=np.zeros((parametros,1))
+    total=0
     
     for i in range (0,n):    
         EE1=np.zeros((N,parametros))
@@ -118,22 +114,14 @@ def design(u,y1,y2,Td,C,L):
             else:
                 par=0
             total=total+par
-            print(total)
         Z=Z+np.dot(EE1.T,EE2)
         Y=Y+np.dot(EE1.T,u[:,i:i+1])
-
-
-    #print('Matriz Z',Z)
-    #print('Matriz Y',Y)
 
     # Compute controller parameters
     p=np.dot(np.linalg.inv(Z),Y)
     return p     
         
         
-#p=vrft_mimo(u,y,y,T,C,T)
-
-#print(p)
 
 
 

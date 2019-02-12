@@ -11,8 +11,7 @@ Testing the function for the inversion of the linear system
 import numpy as np #important package for scientific computing: it has important array features
 import scipy.signal as sig # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
-
-import vrft # import the functions from the file invfunc.py
+import vrft # import vrft
 
 #%% First step: defining the system that we want to apply the algorithm
 # the SISO system will be defined in a transfer function representation

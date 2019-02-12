@@ -11,8 +11,7 @@ Testing the inversion algorithm on a MIMO system and the transformation of a MIM
 import numpy as np # important package for scientific computing: important array features
 import scipy.signal as signal # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
-from vrft import invfunc # import the function from the file invfunc.py
-from vrft import control # import functions of the teste.py file
+import vrft # import vrft
 
 #%% First step: defining the MIMO system
 
@@ -92,7 +91,7 @@ plt.ylabel('u(t)')
 plt.show()
 
 # calculating the output of the MIMO system
-y=teste.filtra(G,u)
+y=vrft.filter(G,u)
 
 # plotting the output signal
 plt.figure()
@@ -105,11 +104,11 @@ plt.show()
 #%% Transforming the system to the state-space model
 
 # using the function that transform the MIMO system to a state-space representation
-Ass,Bss,Css,Dss=invfunc.dmimo_tf2ss(G)
+Ass,Bss,Css,Dss=vrft.dmimo_tf2ss(G)
 
 #%% Calculate the input signal from the given system and the output signal
 
-uhat,tt=invfunc.stblinvlinsys(Ass,Bss,Css,Dss,y.T,t)
+uhat,tt=vrft.stblinvlinsys(Ass,Bss,Css,Dss,y.T,t)
 
 # plotting the calculated output
 plt.figure()
