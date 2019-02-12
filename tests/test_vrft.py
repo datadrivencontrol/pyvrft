@@ -12,7 +12,7 @@ class TestVrft(unittest.TestCase):
         # organizing the MIMO system G(z) in a python list
         G=[[G11,G12],[G21,G22]]
         # IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]. The latter generates a WARNING!!
-        Ass,Bss,Css,Dss=vrft.dmimo_tf2ss(G)
+        Ass,Bss,Css,Dss=vrft.mtf2ss(G)
         a = 1
         self.assertEqual(a,1)
 

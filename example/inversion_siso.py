@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan 21 09:37:20 2019
-@author: Emerson Boeira
+@authors: Emerson Boeira and Diego Eckhard
 """
 """
-Testing the function for the inversion of the linear system
+Testing the function for the inversion of linear systems. This example concerns a inversion of a SISO system
 """
-#%%Header: import python libraries
+#%% Header: import python libraries
 
-import numpy as np #important package for scientific computing: it has important array features
+import numpy as np # important package for scientific computing
 import scipy.signal as sig # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
 import vrft # import vrft
 
 #%% First step: defining the system that we want to apply the algorithm
-# the SISO system will be defined in a transfer function representation
+# the SISO system will be defined in a transfer function representation, for testing purposes
 
 # numerator and denominator of the discrete-time transfer function
 numG=np.array([0.5])
@@ -25,19 +25,19 @@ denG=np.array([1,-1.3,0.4])
 Ts=1
 
 # calculate the state-space model from the numerator and denominator of the transfer function
-A,B,C,D=sig.tf2ss(numG, denG)
+A,B,C,D=sig.tf2ss(numG,denG)
 
 # calculate system's dimensions: number of states, number of inputs and number of outputs
-n=A.shape[0] #number of states
-m=B.shape[1] #number of inputs
-p=C.shape[0] #number of outputs
+n=A.shape[0] # number of states
+m=B.shape[1] # number of inputs
+p=C.shape[0] # number of outputs
 
 #%% Defining the input signal to be applied in the system
 
 # samples of the input signal
 N=150
 # discrete time vector of the simulation
-t=np.linspace(0,N-1,N) #linspace(start,stop,numberofpoints)
+t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
 t.shape=(1,N)
 # using a square wave
@@ -45,10 +45,10 @@ t.shape=(1,N)
 ts=100
 fs=1/ts
 # finally, defining the square wave using the function square
-u=0.5-0.5*sig.square(2*np.pi*fs*t)
+#u=0.5-0.5*sig.square(2*np.pi*fs*t)
 
 # testing another arbitrary input
-#u=sig.gausspulse(t,fc=0.03)
+u=sig.gausspulse(t,fc=0.03)
 
 # testing another arbitrary input: white noise
 #u=np.random.normal(0,1,N)
@@ -83,9 +83,9 @@ plt.xlabel('time (t)')
 plt.ylabel('y(t)')
 plt.show()
 
-#%% Calculate the input signal from the given system and the output signal
+#%% Calculate the input signal from a given system and an output signal
 
-uhat,tt=vrft.stblinvlinsys(A,B,C,D,y,t)
+uhat,tt=vrft.stbinv(A,B,C,D,y,t)
 
 # plotting the calculated output
 plt.figure()
@@ -97,6 +97,6 @@ plt.ylabel('uhat(t)')
 plt.show()
 
 # comparing the real input vector with the calculated by the inverse algorithm
-Nn=np.shape(uhat)[1]
-err=np.sum((uhat-u[:,0:Nn])**2)
-print(err)
+#Nn=np.shape(uhat)[1]
+#err=np.sum((uhat-u[:,0:Nn])**2)
+#print(err)

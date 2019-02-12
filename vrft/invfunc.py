@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Jan 20 16:38:10 2019
-@author: Emerson Boeira
+@author: Emerson Boeira and Diego Eckhard
 """
 """
 Functions that are used to implement the algorithm proposed on the paper: Stable Inversion of Linear Systems
 """
-#%%Header: import python libraries
+#%% Header: import python libraries
 
-import numpy as np #important package for scientific computing: it has important array features
-import scipy.linalg as scilin #importing linear algebra functions from scipy - another important package for scientific computation
-import scipy.signal as signal #signal processing library
+import numpy as np # important package for scientific computing
+import scipy.linalg as scilin # importing linear algebra functions from scipy
+import scipy.signal as signal # signal processing library
 
 #%% Function that does the reduction of the system
 
-def invreduction(A,B,C,D,y,v):
+def invredc(A,B,C,D,y,v):
         
     # calculate the number of samples of the output
     N=np.shape(y)[1] # the number of samples is the number of columns of y (we defined that way)
@@ -177,7 +177,7 @@ def invreduction(A,B,C,D,y,v):
 
 #%% Function that does the whole inversion of the system. It uses the invreduction function defined above
     
-def stblinvlinsys(A,B,C,D,y,t):
+def stbinv(A,B,C,D,y,t):
     
     # calculate the number of samples of the output
     N=np.shape(y)[1] # the number of samples is the number of columns of y (we defined that way)
@@ -198,7 +198,7 @@ def stblinvlinsys(A,B,C,D,y,t):
     # starting the loop of the reduction procedure
     while flag==0:
         # run a step of the reduction order algorithm     
-        Ahat,Bhat,Chat,Dhat,yhat,vhat,nhat,phat,rhat=invreduction(A,B,C,D,y,v)
+        Ahat,Bhat,Chat,Dhat,yhat,vhat,nhat,phat,rhat=invredc(A,B,C,D,y,v)
         # increments the counter of reductions
         kround=kround+1 # increments the counter of the rounds        
                 
@@ -263,7 +263,7 @@ def stblinvlinsys(A,B,C,D,y,t):
 #%% Function that does the transformation of a MIMO transfer function process in a state-space model
 # IMPORTANT: This is a simple algorithm that does not produce a minimal realization!
 
-def dmimo_tf2ss(G):
+def mtf2ss(G):
     
     # calculating the number of outputs
     p=len(G)
