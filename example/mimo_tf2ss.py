@@ -6,11 +6,11 @@ Created on Wed Feb  6 19:45:59 2019
 """
 Function used to implement the transformation from a MIMO transfer function model to a state space model
 """
-#%%Header: importing python libraries
+#%% Header: importing python libraries
 
-import numpy as np #important package for scientific computing: it has important array features
-from scipy import signal #signal processing library
-import matplotlib.pyplot as plt #library to plot graphics
+import numpy as np # important package for scientific computing
+from scipy import signal # signal processing library
+import matplotlib.pyplot as plt # library to plot graphics
 import vrft # import vrft
 
 #%% Defining the system in the transfer function list structure (as we have been working)
@@ -35,7 +35,7 @@ Ass,Bss,Css,Dss=vrft.dmimo_tf2ss(G)
 # samples of the input signal
 N=500
 # discrete time vector of the simulation
-t=np.linspace(0,N-1,N) #linspace(start,stop,numberofpoints)
+t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the time vector to have the specified dimensions
 t.shape=(1,N)
 
@@ -43,7 +43,7 @@ t.shape=(1,N)
 # defining the period of the square wave
 ts=N
 fs=1/ts
-# finally, defining the square wave using the function square
+# finally, defining the square wave using the function signal.square()
 #u1=0.5-0.5*signal.square(2*np.pi*fs*t).T
 #u2=0.5-0.5*signal.square(2*np.pi*fs*t-3*np.pi/2).T
 ## testing another arbitrary inputs: gaussian pulse
@@ -78,4 +78,4 @@ plt.plot(t.T,yss.T,'k-.')
 plt.grid(True)
 plt.xlabel('time (t)')
 plt.ylabel('y(t)')
-plt.show()            
+plt.show()

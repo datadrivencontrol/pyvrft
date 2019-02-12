@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Feb  7 17:53:47 2019
-@author: Emerson
+@author: Emerson Boeira and Diego Eckhard
 """
 """
 Testing the inversion algorithm on a MIMO system and the transformation of a MIMO transfer function to the state-space representation
 """
-#%%Header: import python libraries
+#%% Header: import python libraries
 
-import numpy as np # important package for scientific computing: important array features
+import numpy as np # important package for scientific computing
 import scipy.signal as signal # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
 import vrft # import vrft
@@ -55,7 +55,7 @@ G=[[G11,G12],[G21,G22]]
 # samples of the input signal
 N=1000
 # discrete time vector of the simulation
-t=np.linspace(0,N-1,N) #linspace(start,stop,numberofpoints)
+t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
 t.shape=(1,N)
 
@@ -66,7 +66,7 @@ fs=1/ts
 # finally, defining the square wave using the function square
 #u1=0.5-0.5*signal.square(2*np.pi*fs*t).T
 #u2=0.5-0.5*signal.square(2*np.pi*fs*t-3*np.pi/2).T
-### testing another arbitrary inputs: gaussian pulse
+# testing another arbitrary inputs: gaussian pulse
 u1=signal.gausspulse(t,fc=0.003).T
 u2=signal.gausspulse(t,fc=0.002).T
 #u3=signal.gausspulse(t,fc=0.0035).T
@@ -80,7 +80,7 @@ u2=signal.gausspulse(t,fc=0.002).T
 u=np.concatenate((u1,u2),axis=1)
 #u=np.concatenate((u1,u2,u3),axis=1)
 #u=u1
-#IMPORTANT: in our toolbox, we decided to organize the input and output signals as an array (N,n), where N=number of data samples, n=number of inputs and outputs
+#IMPORTANT: in our toolbox, we decided to organize the input and output signals as a matrix (N,n), where N=number of data samples, n=number of inputs and outputs
 
 # plotting the input signal
 plt.figure()

@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan 21 15:36:13 2019
-@author: Emerson Boeira
+@authors: Emerson Boeira and Diego Eckhard
 """
 """
-Testing the inversion algorithm on a MIMO system
+Testing the inversion algorithm on a MIMO system.
 """
-#%%Header: import python libraries
+#%% Header: import python libraries
 
-import numpy as np # important package for scientific computing: important array features
+import numpy as np # important package for scientific computing
 import scipy.signal as sig # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
 import vrft # import vrft
@@ -58,17 +58,17 @@ D=np.zeros((2,2))
 ## feedforward matrix
 #D=np.zeros((2,1))
 
-# calculate systems dimensions: number of states, number of inputs and number of outputs
-n=A.shape[0] #number of states
-m=B.shape[1] #number of inputs
-p=C.shape[0] #number of outputs
+# calculate system's dimensions: number of states, number of inputs and number of outputs
+n=A.shape[0] # number of states
+m=B.shape[1] # number of inputs
+p=C.shape[0] # number of outputs
 
 #%% Defining the input signal to be applied in the system
 
 # samples of the input signal
 N=1000
 # discrete time vector of the simulation
-t=np.linspace(0,N-1,N) #linspace(start,stop,numberofpoints)
+t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
 t.shape=(1,N)
 
@@ -76,7 +76,7 @@ t.shape=(1,N)
 # defining the period of the square wave
 ts=N
 fs=1/ts
-# finally, defining the square wave using the function square
+# finally, defining the square wave using the function signal.square()
 #u1=0.5-0.5*sig.square(2*np.pi*fs*t)
 #u2=0.5-0.5*sig.square(2*np.pi*fs*t-3*np.pi/2)
 
