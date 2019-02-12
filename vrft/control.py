@@ -12,7 +12,7 @@ from vrft import invfunc
 
 #%% Functions
    
-def filtra(G,u):
+def filter(G,u):
     
     n=len(G)
     m=len(G[0])
@@ -40,7 +40,7 @@ def filtra_all(G,u):
         
         return np.zeros(np.shape(u))
 
-def vrft_mimo(u,y1,y2,Td,C,L):
+def design(u,y1,y2,Td,C,L):
 
     # number of data samples
     N=len(u)
