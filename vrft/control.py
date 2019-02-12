@@ -8,6 +8,7 @@ Created on Thu Nov 22 17:45:33 2018
 
 from scipy import signal
 import numpy as np
+import vrft
 
 #%% Functions
    
@@ -55,12 +56,12 @@ def design(u,y1,y2,Td,C,L):
     #u=filtra(L,u);
     
     # transformation of Td from the MIMO transfer function list structure to a state-space model
-    Atd,Btd,Ctd,Dtd=invfunc.dmimo_tf2ss(Td)
-    # calculates the virtual error for the first data set
-    r1v,_=invfunc.stblinvlinsys(Atd,Btd,Ctd,Dtd,y1.T,t)
+    Atd,Btd,Ctd,Dtd=vrft.dmimo_tf2ss(Td)
+    # calculates the virtual reference for the first data set
+    r1v,_=vrft.stblinvlinsys(Atd,Btd,Ctd,Dtd,y1.T,t)
     r1v=r1v.T
-    # calculates the virtual error for the second data set (instrumental variable)
-    r2v,_=invfunc.stblinvlinsys(Atd,Btd,Ctd,Dtd,y2.T,t)
+    # calculates the virtual reference for the second data set (instrumental variable)
+    r2v,_=vrft.stblinvlinsys(Atd,Btd,Ctd,Dtd,y2.T,t)
     r2v=r2v.T
     # remove the last samples of y, to match the dimension of the virtual reference
     nrv=r1v.shape[0]
