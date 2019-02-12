@@ -104,11 +104,11 @@ plt.show()
 #%% Transforming the system to the state-space model
 
 # using the function that transform the MIMO system to a state-space representation
-Ass,Bss,Css,Dss=vrft.dmimo_tf2ss(G)
+Ass,Bss,Css,Dss=vrft.mtf2ss(G)
 
 #%% Calculate the input signal from the given system and the output signal
 
-uhat,tt=vrft.stblinvlinsys(Ass,Bss,Css,Dss,y.T,t)
+uhat,tt=vrft.stbinv(Ass,Bss,Css,Dss,y.T,t)
 
 # plotting the calculated output
 plt.figure()

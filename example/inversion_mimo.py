@@ -125,7 +125,7 @@ plt.show()
 
 #%% Calculate the input signal from the given system and the output signal
 
-uhat,tt=vrft.stblinvlinsys(A,B,C,D,y,t)
+uhat,tt=vrft.stbinv(A,B,C,D,y,t)
 
 # plotting the calculated output
 plt.figure()

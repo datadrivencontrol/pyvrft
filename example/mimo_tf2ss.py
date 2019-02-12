@@ -27,7 +27,7 @@ G=[[G11,G12],[G21,G22]]
 # %% TESTING THE IMPLEMENTATION OF THE FUNCTION
 
 # using the function
-Ass,Bss,Css,Dss=vrft.dmimo_tf2ss(G)
+Ass,Bss,Css,Dss=vrft.mtf2ss(G)
             
 #%% Test if the both systems are equivalent
 

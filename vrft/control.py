@@ -56,12 +56,12 @@ def design(u,y1,y2,Td,C,L):
     #u=filtra(L,u);
     
     # transformation of Td from the MIMO transfer function list structure to a state-space model
-    Atd,Btd,Ctd,Dtd=vrft.dmimo_tf2ss(Td)
+    Atd,Btd,Ctd,Dtd=vrft.mtf2ss(Td)
     # calculates the virtual reference for the first data set
-    r1v,_=vrft.stblinvlinsys(Atd,Btd,Ctd,Dtd,y1.T,t)
+    r1v,_=vrft.stbinv(Atd,Btd,Ctd,Dtd,y1.T,t)
     r1v=r1v.T
     # calculates the virtual reference for the second data set (instrumental variable)
-    r2v,_=vrft.stblinvlinsys(Atd,Btd,Ctd,Dtd,y2.T,t)
+    r2v,_=vrft.stbinv(Atd,Btd,Ctd,Dtd,y2.T,t)
     r2v=r2v.T
     # remove the last samples of y, to match the dimension of the virtual reference
     nrv=r1v.shape[0]
@@ -119,10 +119,4 @@ def design(u,y1,y2,Td,C,L):
 
     # Compute controller parameters
     p=np.dot(np.linalg.inv(Z),Y)
-    return p     
-        
-        
-
-
-
-    
+    return p
