@@ -8,7 +8,6 @@ Created on Thu Nov 22 17:45:33 2018
 
 from scipy import signal
 import numpy as np
-from vrft import invfunc
 
 #%% Functions
    
