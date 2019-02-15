@@ -61,7 +61,7 @@ p=len(G)
 m=len(G[0])
 # number of states
 nss=Ass.shape[0]
-# pre-allocating the variables
+# preallocating the variables
 x=np.zeros((nss,N)) # for simplicity, we'll consider x(0)=0
 yss=np.zeros((p,N))
 # calculate the first value for the output (t=0)

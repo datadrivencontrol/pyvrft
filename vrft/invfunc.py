@@ -141,7 +141,7 @@ def invredc(A,B,C,D,y,v):
     y1hat=y1hat[:,0:N-1]
 
     # calculating y2hat
-    # pre allocating variables before the loop
+    # preallocating variables before the loop
     y2hat=np.zeros((q,N-1))
     # runing the loop
     for k in range(0, N-1): # the for loop has to run N-1 times, from 0 to N-2, because of y2[k+1] on the equation
@@ -202,9 +202,9 @@ def stbinv(A,B,C,D,y,t):
         # increments the counter of reductions
         kround=kround+1 # increments the counter of the rounds        
                 
-        # pre-allocating the state vector of the inverse system
+        # preallocating the state vector of the inverse system
         xhat=np.zeros((nhat,N-kround)) # it must have N-kround samples
-        # pre-allocating the calculated input
+        # preallocating the calculated input
         uhat=np.zeros((m,N-kround))
                 
         # defining the reduced time vector
@@ -290,7 +290,7 @@ def mtf2ss(G):
             else:
                 A[i].append([]);B[i].append([]);C[i].append([]);D[i].append([])
 
-    # pre-allocation of the system's matrix
+    # preallocation of the system's matrix
     Ass=np.zeros((nss,nss))
     Bss=np.zeros((nss,m))
     Css=np.zeros((p,nss))
