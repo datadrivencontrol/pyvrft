@@ -64,7 +64,7 @@ plt.show()
 
 #%% Simulating the linear system
 
-# pre-allocating the variables
+# preallocating the variables
 x=np.zeros((n,N)) # for simplicity, we'll consider x(0)=0
 y=np.zeros((p,N))
 
