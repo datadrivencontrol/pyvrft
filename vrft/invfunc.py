@@ -192,6 +192,8 @@ def stbinv(A,B,C,D,y,t):
     
     # initializing the flag variable
     flag=0
+    # initializing the flag variable for the vrft method
+    flag_vr=0
     # initializing the counter for the rounds of the reduction step of the algorithm
     kround=0
     
@@ -214,9 +216,10 @@ def stbinv(A,B,C,D,y,t):
         if (phat < m):
             # if this condition is true, then the algorithm has failed and it is not possible to find the inverse
             flag=1
+            flag_vr=1
             # if this is the case, we print a message and end the execution
             print('The inversion algorithm has failed')
-            return uhat,tt
+            return uhat,tt,flag_vr
         else:
             if (rhat==m):
                 #((rhat==m)&(rhat==phat)):
@@ -247,8 +250,9 @@ def stbinv(A,B,C,D,y,t):
     # test if wsum is greater than 1
     if wsum>0:                    
         # if wsum is greater than 1, then, the inverse system is unstable, so we end the execution of the algorithm
-        print('The inverse system is unstable')
-        return uhat,tt                    
+        #print('The inverse system is unstable')
+        flag_vr=2
+        return uhat,tt,flag_vr
     else:                    
         # if wsum=0, then the inverse system is stable, and we can calculate the input signal   
         # calculate the first value for the output (t=0)
@@ -258,7 +262,7 @@ def stbinv(A,B,C,D,y,t):
             xhat[:,k+1]=Ainv@xhat[:,k]+Binv@yhat[:,k]+vhat[:,k]
             uhat[:,k+1]=Cinv@xhat[:,k+1]+Dinv@yhat[:,k+1]
                 
-    return uhat,tt
+    return uhat,tt,flag_vr
 
 #%% Function that does the transformation of a MIMO transfer function process in a state-space model
 # IMPORTANT: This is a simple algorithm that does not produce a minimal realization!
