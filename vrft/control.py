@@ -14,7 +14,6 @@ import vrft # vrft package
    
 def filter(G,u):
     # function used to filter the signals in a MIMO structure, as we defined in our toolbox
-    
     # number of outputs
     n=len(G)
     # number of inputs
@@ -27,7 +26,7 @@ def filter(G,u):
             if (G[i][j]!=0):
                 t,v = signal.dlsim(G[i][j],u[:,j])
                 y[:,i]=y[:,i]+v[:,0]
-    # return the output signal            
+    # return the output (filtered) signal
     return y
 
 def colfilter(G,u):
@@ -35,15 +34,13 @@ def colfilter(G,u):
     
     # test if the transfer function is not zero
     # preallocating the output
-    y=np.empty(np.shape(u))
+    y=np.zeros((np.shape(u)))
     if (G!=0):    
         # loop for each column of u
         for i, col in enumerate(u.T):
             t,v = signal.dlsim(G,col)
             y[:,i]=v[:,0]
-        return y
-    else:
-        return y
+    return y
 
 def design(u,y,y_iv,Td,C,L):
     # function that implements the Unbiased MIMO VRFT method
