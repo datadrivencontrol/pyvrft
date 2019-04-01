@@ -16,7 +16,7 @@ import vrft # implementation of vrft
 #%% First step: defining the process model, the noise model, the reference model, and the controller class
 
 # declaration of the transfer fuctions that compose the process G(z)
-G11=signal.TransferFunction([1,-1.2],[1,-1.7,0.72],dt=1)
+G11=signal.TransferFunction([-1,+1.2],[1,-1.7,0.72],dt=1)
 G=[[G11]]
 # IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]. The latter generates a warning!!
 
@@ -34,6 +34,7 @@ Td=[[Td11]]
 #L11=signal.TransferFunction([0.25],[1,-0.75],dt=1)
 # organizing the filter as a list
 #L=[[L11]]
+# a simple choice
 L=Td
 
 # defining the controller structure that will be used in the method
@@ -46,8 +47,7 @@ C=[[Cpid]] # in this example, we choosed a decentralized PI controller
 #%% Simulating the open loop system to obtain the data for the VRFT
 
 # samples of the input signal
-N=11
-#N=10
+N=150
 # discrete time vector of the simulation
 t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions

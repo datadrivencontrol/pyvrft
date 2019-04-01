@@ -46,6 +46,7 @@ Td=[[Td11,Td12],[Td21,Td22]]
 #L22 = signal.TransferFunction([0.2],[1,-0.6],dt=1)
 # organizing the MIMO filter as a list
 #L=[[L11,L12],[L21,L22]]
+# a simple choice
 L=Td
 
 # defining the controller structure that will be used in the method

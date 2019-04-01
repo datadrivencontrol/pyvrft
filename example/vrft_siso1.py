@@ -31,10 +31,11 @@ Td11=signal.TransferFunction([0.2],[1,-0.8],dt=1)
 Td=[[Td11]]
 
 # choosing the VRFT method filter
-L11=signal.TransferFunction([0.25],[1,-0.75],dt=1)
+#L11=signal.TransferFunction([0.25],[1,-0.75],dt=1)
 # organizing the filter as a list
-L=[[L11]]
-#L=Td
+#L=[[L11]]
+# a simple choice
+L=Td
 
 # defining the controller structure that will be used in the method
 Cp=[[signal.TransferFunction([1],[1],dt=1)]] # proportional controller structure
@@ -45,8 +46,7 @@ C=[[Cpi]] # in this example, we choosed a decentralized PI controller
 #%% Simulating the open loop system to obtain the data for the VRFT
 
 # samples of the input signal
-N=350
-#N=10
+N=150
 # discrete time vector of the simulation
 t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
