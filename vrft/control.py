@@ -154,7 +154,7 @@ def design(u,y,y_iv,Td,C,L):
     
     elif flagvr==1:
         # if flagvr=1, then, it was not possible to calculate the inverse of the reference model
-        print("It was not possible to calculate the virtual reference.")
+        print("It was not possible to calculate the virtual reference. The inversion algorithm has failed.")
         # return an empty parameter vector
         p=np.empty((0,0))
         return p

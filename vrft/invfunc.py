@@ -218,7 +218,7 @@ def stbinv(A,B,C,D,y,t):
             flag=1
             flag_vr=1
             # if this is the case, we print a message and end the execution
-            print('The inversion algorithm has failed')
+            #print('The inversion algorithm has failed')
             return uhat,tt,flag_vr
         else:
             if (rhat==m):
