@@ -91,59 +91,63 @@ def design(u,y,y_iv,Td,C,L):
             
         # total number of parameters (casting to integer)
         p_tot=int(np.sum(nbpar))
-    
-        # assembling the matrix phi_N=[phi_1N^T phi_2N^T...phi_nN^T]       
-        # preallocating
-        phi_N=np.zeros((N,p_tot))
-        csi_N=np.zeros((N,p_tot))
-        pacc=0
-        # loop that organizes the matrix phi_N=[phi_1N^T phi_2N^T...phi_nN^T]       
+        
+        # assembling the matrices phi_iN and organizing it as a python list
+        # initiating the list
+        phi_iN_list=[]
+        csi_iN_list=[]
+        # loops
         for i in range (0,n):
+            # preallocating the matrices
+            phi_iN=np.empty((N,0))
+            csi_iN=np.empty((N,0))
+            # loop on j
             for j in range (0,n):
                 if len(C[i][j])>0:
-                    # calculating phi_ij(t)^T
-                    phi_ij=vrft.filter(C[i][j],ebar[:,j:j+1])
+                    # calculating phi_ijN^T
+                    phi_ijN=vrft.filter(C[i][j],ebar[:,j:j+1])
+                    # calculating cis_ijN^T (instrumental variable)
+                    csi_ijN=vrft.filter(C[i][j],ebar_iv[:,j:j+1])
+                    # calculating phi_iN^T, by concatenating the phi_ijN^T matrices
+                    phi_iN=np.concatenate((phi_iN,phi_ijN),axis=1) # concatenate column wise
                     # instrumental variable
-                    csi_ij=vrft.filter(C[i][j],ebar_iv[:,j:j+1])
-                    # number of parameters in Cij(z)
-                    pij=int(nbpar[i][j])
-                    # assembling phi_N
-                    phi_N[:,pacc:pacc+pij]=phi_ij
-                    csi_N[:,pacc:pacc+pij]=csi_ij
-                    # parameter accumulator
-                    pacc=pacc+pij
-                
-        # using the accumulator again
-        pacc=0                
-        # loop that organize the phi_vrf matrix (with the filter)
-        # preallocating
-        phivrf=np.zeros((N*n,p_tot))
-        csivrf=np.zeros((N*n,p_tot))
-        # loop
-        for i in range (0,n):
-            for j in range (0,n):
-                # number of parameters regarding the signal ui:
-                p_i=int(np.sum(nbpar[i])) # casting to integer as well
-                # separates the phi_iN signal
-                phi_iN=phi_N[:,pacc:pacc+p_i]
-                csi_iN=csi_N[:,pacc:pacc+p_i]
-                # using the MIMO filter L(q)
-                phivrf[N*j:N*(j+1),pacc:pacc+p_i]=vrft.colfilter( L[j][i],phi_iN ) # the index are correct, despite the inversion :)
-                csivrf[N*j:N*(j+1),pacc:pacc+p_i]=vrft.colfilter( L[j][i],csi_iN ) # instrumental variable
-            # acumulating the parameters
-            pacc=pacc+p_i
-        
+                    csi_iN=np.concatenate((csi_iN,csi_ijN),axis=1) # concatenate column wise                        
+            # saving in the list structure
+            phi_iN_list.append(phi_iN)
+            csi_iN_list.append(csi_iN)
+            
+        # assembling the matrices Phi_vrf and Csi_vrf (instrumental variable) - which considers the filter of the VRFT method
+        # initiating the Phi_vrf and Csi_vrf matrices
+        Phi_vrf=np.empty((0,p_tot))
+        Csi_vrf=np.empty((0,p_tot))
+        # start the loop
+        # on i
+        for i in range(0,n):
+            # loop on j
+            # initiating the matrices the compososes "each row" of Phi_vrf and Csi_vrf
+            Phi_row=np.empty((N,0))
+            Csi_row=np.empty((N,0))
+            for j in range(0,n):
+                Phi_ij=vrft.colfilter( L[i][j],phi_iN_list[j] ) # the index are correct, despite the inversion
+                Csi_ij=vrft.colfilter( L[i][j],csi_iN_list[j] ) # the index are correct, despite the inversion
+                # concatenating the rows of 
+                Phi_row=np.concatenate((Phi_row,Phi_ij),axis=1) # concatenate column wise
+                Csi_row=np.concatenate((Csi_row,Csi_ij),axis=1) # concatenate column wise
+            # concatanating the rows of Phi_vrf and Csi_vrf
+            Phi_vrf=np.concatenate((Phi_vrf,Phi_row),axis=0) # concatenate row wise
+            Csi_vrf=np.concatenate((Csi_vrf,Csi_row),axis=0) # concatenate row wise
+            
         # reorganizing the uf vector (stacking)
         # preallocating
-        Uf=np.zeros((N*n,1))
+        Uf=np.empty((0,1))
         # loop
         for i in range (0,n):
-            Uf[N*i:N*(i+1)]=uf[:,i:i+1]
-        
-        # compute parameters
-        Z=csivrf.T@phivrf
-        Y=csivrf.T@Uf
-        p=np.linalg.inv(Z)@Y
+            Uf=np.concatenate((Uf,uf[:,i:i+1]),axis=0) # concatenate row wise
+            
+        # compute controller parameters
+        Z=np.dot(Csi_vrf.T,Phi_vrf)
+        Y=np.dot(Csi_vrf.T,Uf)
+        p=np.dot(np.linalg.inv(Z).T,Y)
         
         # returning the parameter vector
         return p
