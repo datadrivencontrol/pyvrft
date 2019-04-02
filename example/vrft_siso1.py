@@ -31,11 +31,11 @@ Td11=signal.TransferFunction([0.2],[1,-0.8],dt=1)
 Td=[[Td11]]
 
 # choosing the VRFT method filter
-#L11=signal.TransferFunction([0.25],[1,-0.75],dt=1)
+L11=signal.TransferFunction([0.25],[1,-0.75],dt=1)
 # organizing the filter as a list
-#L=[[L11]]
+L=[[L11]]
 # a simple choice
-L=Td
+#L=Td
 
 # defining the controller structure that will be used in the method
 Cp=[[signal.TransferFunction([1],[1],dt=1)]] # proportional controller structure
