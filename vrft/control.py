@@ -128,9 +128,9 @@ def design(u,y,y_iv,Td,C,L):
             Phi_row=np.empty((N,0))
             Csi_row=np.empty((N,0))
             for j in range(0,n):
-                Phi_ij=vrft.colfilter( L[i][j],phi_iN_list[j] ) # the index are correct, despite the inversion
-                Csi_ij=vrft.colfilter( L[i][j],csi_iN_list[j] ) # the index are correct, despite the inversion
-                # concatenating the rows of 
+                Phi_ij=vrft.colfilter(L[i][j],phi_iN_list[j]) 
+                Csi_ij=vrft.colfilter(L[i][j],csi_iN_list[j])
+                # concatenating the columns to assemble "each row" of Phi_vrf and Csi_vrf
                 Phi_row=np.concatenate((Phi_row,Phi_ij),axis=1) # concatenate column wise
                 Csi_row=np.concatenate((Csi_row,Csi_ij),axis=1) # concatenate column wise
             # concatanating the rows of Phi_vrf and Csi_vrf
