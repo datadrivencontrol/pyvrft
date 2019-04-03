@@ -2,9 +2,8 @@
 """
 Created on Tue Feb 5 14:56:39 2019
 @authors: Diego Eckhard and Emerson Boeira
-"""
-"""
-Testing the vrft function on a example
+
+Testing the vrft function on a simple example
 """
 #%% Header: importing python libraries
 
@@ -15,22 +14,14 @@ import vrft # implementation of vrft
 
 #%% First step: defining the process model, the noise model, the reference model, and the controller class
 
-## declaration of the transfer fuctions that compose the MIMO process G(z)
-#G11 = signal.TransferFunction([1],[1,-0.9],dt=1)
-#G12 = 0
-#G21 = 0
-#G22 = signal.TransferFunction([1],[1,-0.9],dt=1)
-## organizing the MIMO system G(z) in a python list
-#G=[[G11,G12],[G21,G22]]
-# IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]. The latter generates a warning!!
 # declaration of the transfer fuctions that compose the MIMO process G(z)
-G11 = signal.TransferFunction([0.09516],[1,-0.9048],dt=1)
-G12 = signal.TransferFunction([0.03807],[1,-0.9048],dt=1)
-G21 = signal.TransferFunction([-0.02974],[1,-0.9048],dt=1)
-G22 = signal.TransferFunction([0.04758],[1,-0.9048],dt=1)
+G11 = signal.TransferFunction([1],[1,-0.9],dt=1)
+G12 = 0
+G21 = 0
+G22 = signal.TransferFunction([1],[1,-0.9],dt=1)
 # organizing the MIMO system G(z) in a python list
 G=[[G11,G12],[G21,G22]]
-
+# IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]. The latter generates a warning!!
 
 # declaration of the transfer fuctions that compose the MIMO noise model H(z)
 H11 = signal.TransferFunction([1],[1],dt=1)
@@ -41,39 +32,33 @@ H22 = signal.TransferFunction([1],[1],dt=1)
 H=[[H11,H12],[H21,H22]]
 
 # declaration of the transfer fuctions that compose the MIMO reference model Td(z)
-#Td11 = signal.TransferFunction([0.2],[1,-0.8],dt=1)
-#Td12 = 0
-#Td21 = 0
-#Td22 = signal.TransferFunction([0.2],[1,-0.8],dt=1)
-# declaration of the transfer fuctions that compose the MIMO reference model Td(z)
-Td11 = signal.TransferFunction([0.25],[1,-0.75],dt=1)
+Td11 = signal.TransferFunction([0.2],[1,-0.8],dt=1)
 Td12 = 0
 Td21 = 0
-Td22 = signal.TransferFunction([0.4],[1,-0.6],dt=1)
+Td22 = signal.TransferFunction([0.2],[1,-0.8],dt=1)
 # organizing the MIMO reference model Td(z) in a python list
 Td=[[Td11,Td12],[Td21,Td22]]
 
 # choosing the VRFT method filter
-L11 = signal.TransferFunction([0.25],[1,-0.75],dt=1)
-L12 = signal.TransferFunction([0.4],[1,-0.65],dt=1)
-L21 = signal.TransferFunction([0.1],[1,-0.75],dt=1)
-L22 = signal.TransferFunction([0.2],[1,-0.6],dt=1)
+#L11 = signal.TransferFunction([1],[1],dt=1)
+#L12 = 0
+#L21 = 0
+#L22 = signal.TransferFunction([1],[1],dt=1)
 # organizing the MIMO filter as a list
-L=[[L11,L12],[L21,L22]]
-#L=Td
+#L=[[L11,L12],[L21,L22]]
+# a simple choice
+L=Td
 
 # defining the controller structure that will be used in the method
-Cp=[[signal.TransferFunction([1],[1],dt=1)]] # proportional controller structure
+#Cp=[[signal.TransferFunction([1],[1],dt=1)]] # proportional controller structure
 Cpi=[[signal.TransferFunction([1, 0],[1, -1],dt=1)] , [signal.TransferFunction([1],[1, -1],dt=1)]] # PI controller structure
 # assembling the MIMO controller structure
-#C = [[Cpi,[]],[[],Cpi]] # in this example, we choosed a decentralized PI controller
-C = [[Cpi,Cpi],[Cpi,Cpi]] # in this example, we choosed a decentralized PI controller
+C = [[Cpi,[]],[[],Cpi]] # in this example, we choosed a decentralized PI controller
 
 #%% Simulating the open loop system to obtain the data for the VRFT
 
 # samples of the input signal
 N=350
-#N=10
 # discrete time vector of the simulation
 t=np.linspace(0,N-1,N) # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
@@ -104,7 +89,7 @@ plt.show()
 # calculating the output of the MIMO system
 yu=vrft.filter(G,u)
 # add noise to the output
-# variance of the whie noise signals
+# variance of the whie noise signals (in this example we choose sigma2=0, i.e. we dont have any noise)
 sigma2_e1=0
 sigma2_e2=0
 # creating noise vectors
@@ -130,4 +115,4 @@ plt.show()
 
 # design the controller using the VRFT method
 p=vrft.design(u,y,y,Td,C,L)
-print(p)
+print("p=",p)

@@ -6,37 +6,44 @@ Created on Thu Nov 22 17:45:33 2018
 """
 #%% Header: import libraries
 
-from scipy import signal
-import numpy as np
-import vrft
+from scipy import signal # signal processing library
+import numpy as np # important package for scientific computing
+import vrft # vrft package
 
 #%% Functions
    
 def filter(G,u):
-    
+    # function used to filter the signals in a MIMO structure, as we defined in our toolbox
+    # number of outputs
     n=len(G)
+    # number of inputs
     m=len(G[0])
+    # preallocating the output
     y=np.zeros((len(u),n))
-    
+    # loop to calculate each output signal
     for i in range(0,n):
         for j in range (0,m):
             if (G[i][j]!=0):
                 t,v = signal.dlsim(G[i][j],u[:,j])
                 y[:,i]=y[:,i]+v[:,0]
+    # return the output (filtered) signal
     return y
 
-def filtra_all(G,u):
+def colfilter(G,u):
+    # function that filter every column of u with the same filter
     
+    # test if the transfer function is not zero
+    # preallocating the output
+    y=np.zeros((np.shape(u)))
     if (G!=0):    
-        y=np.empty(np.shape(u))
+        # loop for each column of u
         for i, col in enumerate(u.T):
             t,v = signal.dlsim(G,col)
             y[:,i]=v[:,0]
-        return y
-    else:        
-        return np.zeros(np.shape(u))
+    return y
 
-def design(u,y1,y2,Td,C,L):
+def design(u,y,y_iv,Td,C,L):
+    # function that implements the Unbiased MIMO VRFT method
 
     # number of data samples
     N=len(u)
@@ -53,11 +60,11 @@ def design(u,y1,y2,Td,C,L):
     # transformation of Td from the MIMO transfer function list structure to a state-space model
     Atd,Btd,Ctd,Dtd=vrft.mtf2ss(Td)
     # calculates the virtual reference for the first data set
-    r1v,_,flagvr=vrft.stbinv(Atd,Btd,Ctd,Dtd,y1.T,t)
-    r1v=r1v.T
+    rv,_,flagvr=vrft.stbinv(Atd,Btd,Ctd,Dtd,y.T,t)
+    rv=rv.T
     # calculates the virtual reference for the second data set (instrumental variable)
-    r2v,_,_=vrft.stbinv(Atd,Btd,Ctd,Dtd,y2.T,t)
-    r2v=r2v.T
+    rv_iv,_,_=vrft.stbinv(Atd,Btd,Ctd,Dtd,y_iv.T,t)
+    rv_iv=rv_iv.T
     
     # test if the inversion algorithm was succesful
     if flagvr==0:
@@ -65,12 +72,12 @@ def design(u,y1,y2,Td,C,L):
     
         # remove the last samples of y, to match the dimension of the virtual reference
         # number of samples used in the method
-        N=r1v.shape[0]
-        y1=y1[0:N,:]
-        y2=y2[0:N,:]
+        N=rv.shape[0]
+        y=y[0:N,:]
+        y_iv=y_iv[0:N,:]
         # virtual error
-        e1=r1v-y1
-        e2=r2v-y2
+        ebar=rv-y
+        ebar_iv=rv-y_iv
         # remove the last samples of the input (to match the dimension of the virtual error)
         uf=uf[0:N,:]
         
@@ -84,65 +91,70 @@ def design(u,y1,y2,Td,C,L):
             
         # total number of parameters (casting to integer)
         p_tot=int(np.sum(nbpar))
-    
-        # assembling the matrix phi_N=[phi_1N^T phi_2N^T...phi_nN^T]       
-        # preallocating
-        phi_N=np.zeros((N,p_tot))
-        csi_N=np.zeros((N,p_tot))
-        pacc=0
-        # loop that organizes the matrix phi_N=[phi_1N^T phi_2N^T...phi_nN^T]       
+        
+        # assembling the matrices phi_iN and organizing it as a python list
+        # initiating the list
+        phi_iN_list=[]
+        csi_iN_list=[]
+        # loops
         for i in range (0,n):
+            # preallocating the matrices
+            phi_iN=np.empty((N,0))
+            csi_iN=np.empty((N,0))
+            # loop on j
             for j in range (0,n):
                 if len(C[i][j])>0:
-                    # calculating phi_ij(t)^T
-                    phi_ij=vrft.filter(C[i][j],e1[:,j:j+1])
-                    csi_ij=vrft.filter(C[i][j],e2[:,j:j+1])
-                    # number of parameters in Cij(z)
-                    pij=int(nbpar[i][j])
-                    # assembling phi_N
-                    phi_N[:,pacc:pacc+pij]=phi_ij
-                    csi_N[:,pacc:pacc+pij]=csi_ij
-                    # parameter accumulator
-                    pacc=pacc+pij
-                
-        # using the accumulator again
-        pacc=0                
-        # loop that organize the phi_vrf matrix (with the filter)
-        # preallocating
-        phivrf=np.zeros((N*n,p_tot))
-        csivrf=np.zeros((N*n,p_tot))
-        # loop
-        for i in range (0,n):
-            for j in range (0,n):
-                # number of parameters regarding the signal ui:
-                p_i=int(np.sum(nbpar[i])) # casting to integer as well
-                # separates the phi_iN signal
-                phi_iN=phi_N[:,pacc:pacc+p_i]
-                csi_iN=csi_N[:,pacc:pacc+p_i]
-                # using the MIMO filter L(q)
-                phivrf[N*j:N*(j+1),pacc:pacc+p_i]=vrft.filtra_all( L[j][i],phi_iN ) # the index are correct, despite the inversion :)
-                csivrf[N*j:N*(j+1),pacc:pacc+p_i]=vrft.filtra_all( L[j][i],csi_iN ) # instrumental variable
-            # acumulating the parameters
-            pacc=pacc+p_i
-        
+                    # calculating phi_ijN^T
+                    phi_ijN=vrft.filter(C[i][j],ebar[:,j:j+1])
+                    # calculating cis_ijN^T (instrumental variable)
+                    csi_ijN=vrft.filter(C[i][j],ebar_iv[:,j:j+1])
+                    # calculating phi_iN^T, by concatenating the phi_ijN^T matrices
+                    phi_iN=np.concatenate((phi_iN,phi_ijN),axis=1) # concatenate column wise
+                    # instrumental variable
+                    csi_iN=np.concatenate((csi_iN,csi_ijN),axis=1) # concatenate column wise                        
+            # saving in the list structure
+            phi_iN_list.append(phi_iN)
+            csi_iN_list.append(csi_iN)
+            
+        # assembling the matrices Phi_vrf and Csi_vrf (instrumental variable) - which considers the filter of the VRFT method
+        # initiating the Phi_vrf and Csi_vrf matrices
+        Phi_vrf=np.empty((0,p_tot))
+        Csi_vrf=np.empty((0,p_tot))
+        # start the loop
+        # on i
+        for i in range(0,n):
+            # loop on j
+            # initiating the matrices the compososes "each row" of Phi_vrf and Csi_vrf
+            Phi_row=np.empty((N,0))
+            Csi_row=np.empty((N,0))
+            for j in range(0,n):
+                Phi_ij=vrft.colfilter(L[i][j],phi_iN_list[j]) 
+                Csi_ij=vrft.colfilter(L[i][j],csi_iN_list[j])
+                # concatenating the columns to assemble "each row" of Phi_vrf and Csi_vrf
+                Phi_row=np.concatenate((Phi_row,Phi_ij),axis=1) # concatenate column wise
+                Csi_row=np.concatenate((Csi_row,Csi_ij),axis=1) # concatenate column wise
+            # concatanating the rows of Phi_vrf and Csi_vrf
+            Phi_vrf=np.concatenate((Phi_vrf,Phi_row),axis=0) # concatenate row wise
+            Csi_vrf=np.concatenate((Csi_vrf,Csi_row),axis=0) # concatenate row wise
+            
         # reorganizing the uf vector (stacking)
         # preallocating
-        Uf=np.zeros((N*n,1))
+        Uf=np.empty((0,1))
         # loop
         for i in range (0,n):
-            Uf[N*i:N*(i+1)]=uf[:,i:i+1]
-        
-        # compute parameters
-        Z=csivrf.T@phivrf
-        Y=csivrf.T@Uf
-        p=np.linalg.inv(Z)@Y
+            Uf=np.concatenate((Uf,uf[:,i:i+1]),axis=0) # concatenate row wise
+            
+        # compute controller parameters
+        Z=np.matmul(Csi_vrf.T,Phi_vrf)
+        Y=np.matmul(Csi_vrf.T,Uf)
+        p=np.linalg.solve(Z.T,Y)
         
         # returning the parameter vector
         return p
     
     elif flagvr==1:
         # if flagvr=1, then, it was not possible to calculate the inverse of the reference model
-        print("It was not possible to calculate the virtual reference.")
+        print("It was not possible to calculate the virtual reference. The inversion algorithm has failed.")
         # return an empty parameter vector
         p=np.empty((0,0))
         return p
@@ -153,49 +165,3 @@ def design(u,y1,y2,Td,C,L):
         # return an empty parameter vector
         p=np.empty((0,0))
         return p
-    
-    # Filter Signals 
-    # E1 normal experiment
-    # E2 instrumental variable
-    
-#    
-#    E1=[]
-#    E2=[]
-#
-#    parametros=0;
-#
-#    for i in range (0,n):
-#        E1.append([])
-#        E2.append([])
-#        for j in range (0,n):
-#            if len(C[i][j])>0:
-#                E1[i].append( filter(C[i][j],e1[:,j:j+1]) )
-#                E2[i].append( filter(C[i][j],e2[:,j:j+1]) )
-#                parametros=parametros+len(C[i][j]);
-#            else:
-#                E1[i].append( np.empty(shape=(0,0)) )
-#                E2[i].append( np.empty(shape=(0,0)) )
-#                
-#
-#    # Filter signals and make ZY matrices
-#    Z=np.zeros((parametros,parametros))
-#    Y=np.zeros((parametros,1))
-#    total=0
-#    
-#    for i in range (0,n):    
-#        EE1=np.zeros((N,parametros))
-#        EE2=np.zeros((N,parametros))
-#        for j in range (0,n):
-#            if E1[i][j].shape[1]>0:
-#                par=E1[i][j].shape[1]
-#                EE1[:,total:total+par]=E1[i][j] # monta [phi_i(1) phi_i(2)... phi_i(N); 0 0 ... 0 ]^T
-#                EE2[:,total:total+par]=E2[i][j]
-#            else:
-#                par=0
-#            total=total+par
-#        Z=Z+np.dot(EE1.T,EE2)
-#        Y=Y+np.dot(EE1.T,u[:,i:i+1])
-#
-#    # Compute controller parameters
-#    p=np.dot(np.linalg.inv(Z),Y)
-#    return p
