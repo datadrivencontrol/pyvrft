@@ -145,9 +145,9 @@ def design(u,y,y_iv,Td,C,L):
             Uf=np.concatenate((Uf,uf[:,i:i+1]),axis=0) # concatenate row wise
             
         # compute controller parameters
-        Z=np.dot(Csi_vrf.T,Phi_vrf)
-        Y=np.dot(Csi_vrf.T,Uf)
-        p=np.dot(np.linalg.inv(Z).T,Y)
+        Z=np.matmul(Csi_vrf.T,Phi_vrf)
+        Y=np.matmul(Csi_vrf.T,Uf)
+        p=np.linalg.solve(Z.T,Y)
         
         # returning the parameter vector
         return p
