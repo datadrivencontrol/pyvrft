@@ -77,7 +77,7 @@ def design(u,y,y_iv,Td,C,L):
         y_iv=y_iv[0:N,:]
         # virtual error
         ebar=rv-y
-        ebar_iv=rv-y_iv
+        ebar_iv=rv_iv-y_iv
         # remove the last samples of the input (to match the dimension of the virtual error)
         uf=uf[0:N,:]
         
