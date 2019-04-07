@@ -147,7 +147,7 @@ def design(u,y,y_iv,Td,C,L):
         # compute controller parameters
         Z=np.matmul(Csi_vrf.T,Phi_vrf)
         Y=np.matmul(Csi_vrf.T,Uf)
-        p=np.linalg.solve(Z.T,Y)
+        p=np.linalg.solve(Z,Y)
         
         # returning the parameter vector
         return p
