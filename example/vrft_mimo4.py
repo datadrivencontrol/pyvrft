@@ -16,15 +16,16 @@ import vrft # implementation of vrft
 
 #%% Reading the data from the .csv file
 
-# read the data from the csv file
-xa=np.genfromtxt('data/plantdata_a.csv',delimiter=',',skip_header=5) # first experiment
-xb=np.genfromtxt('data/plantdata_b.csv',delimiter=',',skip_header=5) # second experiment: instrumental variable
-# defining the number of inputs and outputs of the system
-n=2;
-# separating inputs and outputs in different arrays
-ya=xa[:,0:n]
-yb=xb[:,0:n]
-u=xa[:,n:n+n]
+# some parameters to read from the .csv using our package
+# offset (or number of lines of the Header of the .csv file)
+offset=5
+# number of inputs and outputs of the system to be controlled
+n=2
+# read the data from the csv file using a function available on our package
+ya,ua=vrft.datafromcsv('data/plantdata_a.csv',',',offset,n)
+yb,ub=vrft.datafromcsv('data/plantdata_b.csv',',',offset,n)
+# choosing the input 
+u=ua
 
 # samples of the input signal
 N=u.shape[0]
