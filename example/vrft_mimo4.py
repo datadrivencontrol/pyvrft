@@ -69,14 +69,14 @@ Td22 = signal.TransferFunction([0.02],[1,-0.98],dt=1)
 Td=[[Td11,Td12],[Td21,Td22]]
 
 # choosing the VRFT method filter
-L11 = signal.TransferFunction([1],[1],dt=1)
-L12 = 0
-L21 = 0
-L22 = signal.TransferFunction([1],[1],dt=1)
+#L11 = signal.TransferFunction([1],[1],dt=1)
+#L12 = 0
+#L21 = 0
+#L22 = signal.TransferFunction([1],[1],dt=1)
 # organizing the MIMO filter as a list
-L=[[L11,L12],[L21,L22]]
+#L=[[L11,L12],[L21,L22]]
 # a simple choice
-#L=Td
+L=Td
 
 # defining the controller structure that will be used in the method
 #Cp=[[signal.TransferFunction([1],[1],dt=1)]] # proportional controller structure
