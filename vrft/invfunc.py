@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*
 """
 Created on Sun Jan 20 16:38:10 2019
-@author: Emerson Boeira and Diego Eckhard
+@authors: Diego Eckhard and Emerson Boeira
 """
 """
 Functions that are used to implement the algorithm proposed on the paper: Stable Inversion of Linear Systems
@@ -9,20 +10,43 @@ Functions that are used to implement the algorithm proposed on the paper: Stable
 #%% Header: import python libraries
 
 import numpy as np # important package for scientific computing
-import scipy.linalg as scilin # importing linear algebra functions from scipy
+import scipy.linalg as scilin # linear algebra functions from scipy
 import scipy.signal as signal # signal processing library
 
 #%% Function that does the reduction of the system
 
 def invredc(A,B,C,D,y,v):
+    # Description to help the user
+    '''Function that does the reduction of the system, used on the inversion algorithm.
+    Inputs: A,B,C,D,y,v
+    Outputs: Ahat,Bhat,Chat,Dhat,yhat,vhat,nhat,phat,rhat
+    
+    Inputs description:
+        A: Dynamic matrix of the system. Its dimension must be (n,n), with n=number of states of the system;
+        B: Input matrix of the system. Its dimension must be (n,m), with n=number of states of the system and m=number of inputs;
+        C: Output matrix of the system. Its dimension must be (p,n), with n=number of states of the system and p=number of outputs;
+        D: Feedforward matrix of the system. Its dimension must be (p,m), with p=number of outputs of the system and m=number of inputs;
+        y: Output data of the system that will be reduced. Its dimension must be (p,N), with p=number of outputs and N=data length;
+        v: Additional input used on the method. Its dimension must be (n,N), with n=number of states of the system and N=data length.
+        
+    Outputs description:
+        Ahat: Reduced system dynamic matrix. Its dimension is (nhat,nhat); 
+        Bhat: Reduced system input matrix. Its dimension is (nhat,m); 
+        Chat: Reduced system output matrix. Its dimension is (phat,nhat); 
+        Dhat: Reduced system feedforward matrix. Its dimension is (phat,m); 
+        yhat: Reduced system output data. Its dimension is (phat,N);
+        vhat: Reduced system additional input. Its dimension is (nhat,N);
+        nhat: Number of states of the new reduced system;
+        phat: Number of outputs of the new reduced system;
+        rhat: New rank of the feedforward matrix. This quantity is important for the inversion algorithm.'''
         
     # calculate the number of samples of the output
-    N=np.shape(y)[1] # the number of samples is the number of columns of y (we defined that way)
+    N=np.shape(y)[1] # the number of samples is the number of columns of y
     
-    # calculate systems dimensions: number of states, number of inputs and number of outputs
-    n=A.shape[0] #number of states
-    #m=B.shape[1] #number of inputs, maybe it's not necessary
-    p=C.shape[0] #number of outputs
+    # calculate system's dimensions: number of states, number of inputs and number of outputs
+    n=A.shape[0] # number of states
+    # m=B.shape[1] # number of inputs, maybe it's not necessary
+    p=C.shape[0] # number of outputs
 
     # A. Output Basis Change
     # here the output basis change and its important quantities and matrices are calculated
@@ -30,9 +54,9 @@ def invredc(A,B,C,D,y,v):
     # rank of the feedforward matrix:
     r=np.linalg.matrix_rank(D)
 
-    # to calculate the S1 matrx, we have partitioned the matrix into [S1a;S2a]
+    # to calculate the S1 matrix, we have partitioned the matrix into [S1a;S2a]
     # firstly, we obtain S1a
-    # since D0 has to possess full row rank, rank(D0)=r, a simple way to do that is to use the scipy.linalg.orth function
+    # since D0 must possess full row rank (rank(D0)=r), a simple way to do that is to use the scipy.linalg.orth function
     D0=(scilin.orth(D.transpose())).transpose()
     # calculating S1a as a solution of the problem S1a*D=D0 using the pseudoinverse (Moore-Penrose inverse):
     S1at=scilin.pinv(D.transpose())@D0.transpose()
@@ -49,7 +73,7 @@ def invredc(A,B,C,D,y,v):
     q=np.linalg.matrix_rank(C2)
     
     # calculating the matrix S2, which is very similar to S1, and it is also partitioned as S2=[S2a;S2b]
-    # since C2bar has to possess full row rank, rank(C2)=q
+    # since C2bar has to possess full row rank (rank(C2)=q)
     C2tilde=(scilin.orth(C2.transpose())).transpose()
     # calculating S2a as a solution of the problem S2a*C2=C2bar using the pseudoinverse (Moore-Penrose inverse):
     S2at=scilin.pinv(C2.transpose())@C2tilde.transpose()
@@ -102,7 +126,7 @@ def invredc(A,B,C,D,y,v):
     Ctilde=C@M
     # transformation of the system's feedforward matrix (it's the same)
     #Dtilde=D # actually, this step is not necessary
-    # transformation of the aditional system input v
+    # transformation of the additional system input v
     vtilde=T@v
     
     # in the next step, we need to partition the new system's matrices and outputs
@@ -127,7 +151,7 @@ def invredc(A,B,C,D,y,v):
     C11=Ctilde[0:r,0:n-q]
     C12=Ctilde[0:r,n-q:n]
 
-    #partition the aditional input vtilde
+    #partition the additional input vtilde
     v1=vtilde[0:n-q,:]
     v2=vtilde[n-q:n,:]
 
@@ -143,14 +167,14 @@ def invredc(A,B,C,D,y,v):
     # calculating y2hat
     # preallocating variables before the loop
     y2hat=np.zeros((q,N-1))
-    # runing the loop
-    for k in range(0, N-1): # the for loop has to run N-1 times, from 0 to N-2, because of y2[k+1] on the equation
+    # running the loop
+    for k in range(0, N-1): # the loop has to run N-1 times, from 0 to N-2, because of y2[k+1] on the equation
         y2hat[:,k]=y2[:,k+1]-A22@y2[:,k]-v2[:,k]
     
     # assembling the reduced system's output vector
     yhat=np.concatenate((y1hat,y2hat),axis=0)
 
-    # calculating the aditional input vhat
+    # calculating the additional input vhat
     vhat=v1+A12@y2
     # discarding the last sample
     vhat=vhat[:,0:N-1]
@@ -161,16 +185,16 @@ def invredc(A,B,C,D,y,v):
     # reduced system's input matrix
     Bhat=B1
     # reduced system's output matrix
-    Chat=np.concatenate((C11,A21),axis=0) #concatenate vertically (row wise)
+    Chat=np.concatenate((C11,A21),axis=0) # concatenate vertically (row wise)
     # reduced system's feedforward matrix
-    Dhat=np.concatenate((D0,B2),axis=0) #concatenate vertically (row wise)
-    # calculating rhat, the new rank of the feedforward matrix Dhat - an important quantitie of the algorithm
+    Dhat=np.concatenate((D0,B2),axis=0) # concatenate vertically (row wise)
+    # calculating rhat, the new rank of the feedforward matrix Dhat (an important quantity of the algorithm)
     rhat=np.linalg.matrix_rank(Dhat)
 
     # calculating the new dimension of the reduced system
-    # reduced system state vector dimension
+    # reduced system's state vector dimension
     nhat=n-q
-    # reduced system output vector dimension
+    # reduced system's output vector dimension
     phat=r+q
     
     return Ahat,Bhat,Chat,Dhat,yhat,vhat,nhat,phat,rhat
@@ -178,31 +202,50 @@ def invredc(A,B,C,D,y,v):
 #%% Function that does the whole inversion of the system. It uses the invreduction function defined above
     
 def stbinv(A,B,C,D,y,t):
+    # Description to help the user
+    '''Function that implements the algorithm for the inversion of a LTI system.
+    Inputs: A,B,C,D,y,t
+    Outputs: uhat,tt,flag_vr
+    
+    Inputs description:
+        A: Dynamic matrix of the system to be inverted. The dimension must be (n,n), with n=number of states;
+        B: Input matrix of the system to be inverted. The dimension must be (n,m), with n=number of states and m=number of inputs;
+        C: Output matrix of the system to be inverted. The dimension must be (p,n) with p=number of outputs and n=number of states;
+        D: Feedforward matrix of the system to be inverted. The dimension must be (p,m), p=number of outputs and m=number of inputs;
+        y: Output data matrix of the system that will be inverted. The dimension must be (p,N) with p=number of outputs and N=data length;
+        t: Time vector related to the output y. Its dimension must be (1,N), with N=data length.
+        
+    Outputs description:
+        uhat: Input signal calculated by the inversion algorithm. Its dimension is (m,Nh), m=number of inputs and Nh=input signal data length;
+        tt: Time vector related to the input signal uhat;
+        flag_vr: Flag that indicates if the algorithm was succesfull:
+            If flag_vr=0, then the algorithm was succesfull;
+            If flag_vr=1, then it was not possible to calculate the inverse of the system;
+            If flag_vr=2, the inverse of the system is unstable.'''
     
     # calculate the number of samples of the output
-    N=np.shape(y)[1] # the number of samples is the number of columns of y (we defined that way)
+    N=np.shape(y)[1] # the number of samples is the number of columns of the data matrix y
     
-    # calculate systems dimensions: number of states, number of inputs and number of outputs
-    m=B.shape[1] #number of inputs
-    # calculate systems dimensions: number of states, number of inputs and number of outputs
-    n=A.shape[0] #number of states
+    # calculate system's dimensions: number of states and number of inputs
+    m=B.shape[1] # number of inputs
+    n=A.shape[0] # number of states
     
-    # initialize the variable v (aditional know input)
+    # initialize the variable v (additional input)
     v=np.zeros((n,N)) # it will be important later
     
     # initializing the flag variable
     flag=0
     # initializing the flag variable for the vrft method
     flag_vr=0
-    # initializing the counter for the rounds of the reduction step of the algorithm
+    # initializing the counter of reduction steps done by the algorithm
     kround=0
     
     # starting the loop of the reduction procedure
     while flag==0:
         # run a step of the reduction order algorithm     
         Ahat,Bhat,Chat,Dhat,yhat,vhat,nhat,phat,rhat=invredc(A,B,C,D,y,v)
-        # increments the counter of reductions
-        kround=kround+1 # increments the counter of the rounds        
+        # increase the counter of reductions
+        kround=kround+1
                 
         # preallocating the state vector of the inverse system
         xhat=np.zeros((nhat,N-kround)) # it must have N-kround samples
@@ -223,13 +266,13 @@ def stbinv(A,B,C,D,y,t):
         else:
             if (rhat==m):
                 #((rhat==m)&(rhat==phat)):
-                #if this condition is true, then the algorithm is done. We can invert the system
+                #if this condition is true, then the algorithm is done. We can calculate the signal u
                 flag=2                
                 # calculating the inverse of the feedforward matrix
                 #E=np.linalg.inv(Dhat)
                 E=np.linalg.pinv(Dhat)                
             else:                
-                # if none of the conditions above are true, then we need to proceed to another round of the reduction step of the algorithm
+                # if none of the conditions above is true, then we need to proceed to another round of the reduction step of the algorithm
                 A=Ahat;B=Bhat;C=Chat;D=Dhat;y=yhat;v=vhat          
                 # after the reduction procedure is done, then the system can be inverted
                 
@@ -268,6 +311,20 @@ def stbinv(A,B,C,D,y,t):
 # IMPORTANT: This is a simple algorithm that does not produce a minimal realization!
 
 def mtf2ss(G):
+    # Description to help the user
+    '''Function that does the transformation of a MIMO transfer function to a state-space model.
+    IMPORTANT: This is a simple algorithm that does not produce a minimal realization!
+    Input: G
+    Outputs: Ass,Bss,Css,Dss
+    
+    Input description:
+        G: MIMO transfer funtion that will be converted. It must be in a python list of TransferFunctionDiscrete elements, with dimension (p,m), with p=number of outputs and m=number of inputs.
+        
+    Outputs description:
+        Ass: Dynamic matrix of the system. Its dimension will be (n,n), with n=number of states calculated;
+        Bss: Input matrix of the system. Its dimension will be (n,m), n=number of states, m=number of inputs;
+        Css: Output matrix of the system. Its dimension will be (p,n), p=number of outputs, n=number of states;
+        Dss: Feedforward matrix of the system. Its dimension will be (p,m), p=number of outputs, m=number of inputs.'''
     
     # calculating the number of outputs
     p=len(G)
@@ -279,22 +336,22 @@ def mtf2ss(G):
 
     nss=0
     # loop that get the SISO state-space transformations
-    for i in range(0, p):
+    for i in range(0,p):
         # outputs - first index of the MIMO process list
         A.append([]);B.append([]);C.append([]);D.append([])
-        for j in range(0, m):
+        for j in range(0,m):
             # inputs - second index of the MIMO process list
             if (G[i][j]!=0):
-                #transform the individual SISO systems to a state-space model
+                # transform the individual SISO systems to a state-space model
                 Aij,Bij,Cij,Dij=signal.tf2ss(G[i][j].num, G[i][j].den)
-                #calculate the size of the A matrix
+                # calculate the size of the A matrix
                 nss=nss+Aij.shape[0]
-                #organizing the matrices iin a list
+                # organizing the matrices on a list
                 A[i].append(Aij);B[i].append(Bij);C[i].append(Cij);D[i].append(Dij)
             else:
                 A[i].append([]);B[i].append([]);C[i].append([]);D[i].append([])
 
-    # preallocation of the system's matrix
+    # preallocation of the system's matrices
     Ass=np.zeros((nss,nss))
     Bss=np.zeros((nss,m))
     Css=np.zeros((p,nss))
@@ -319,7 +376,7 @@ def mtf2ss(G):
                 Css[i,ct:ct+nij]=C[i][j][0,:]
                 # organizing the feedforward matrix
                 Dss[i,j]=D[i][j]
-                # incremets the counter
+                # increase the counter
                 ct=ct+nij
                 
     return Ass,Bss,Css,Dss
