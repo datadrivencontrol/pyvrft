@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  3 16:14:00 2019
-
 @authors: Emerson Boeira and Diego Eckhard
 
 Testing the vrft with data read from a .csv file
@@ -12,7 +11,7 @@ Testing the vrft with data read from a .csv file
 import numpy as np # important package for scientific computing
 from scipy import signal # signal processing library
 import matplotlib.pyplot as plt # library to plot graphics
-import vrft # implementation of vrft
+import vrft # vrft package
 
 #%% Reading the data from the .csv file
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan 21 09:37:20 2019
-@authors: Emerson Boeira and Diego Eckhard
+@authors: Diego Eckhard and Emerson Boeira
 """
 """
 Testing the function for the inversion of linear systems. This example concerns a inversion of a SISO system
@@ -85,7 +85,7 @@ plt.show()
 
 #%% Calculate the input signal from a given system and an output signal
 
-uhat,tt=vrft.stbinv(A,B,C,D,y,t)
+uhat,tt,_=vrft.stbinv(A,B,C,D,y,t)
 
 # plotting the calculated output
 plt.figure()

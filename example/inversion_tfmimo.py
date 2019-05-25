@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Feb  7 17:53:47 2019
-@author: Emerson Boeira and Diego Eckhard
+@authors: Diego Eckhard and Emerson Boeira
 """
 """
 Testing the inversion algorithm on a MIMO system and the transformation of a MIMO transfer function to the state-space representation
@@ -108,7 +108,7 @@ Ass,Bss,Css,Dss=vrft.mtf2ss(G)
 
 #%% Calculate the input signal from the given system and the output signal
 
-uhat,tt=vrft.stbinv(Ass,Bss,Css,Dss,y.T,t)
+uhat,tt,_=vrft.stbinv(Ass,Bss,Css,Dss,y.T,t)
 
 # plotting the calculated output
 plt.figure()

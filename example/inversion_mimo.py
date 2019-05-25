@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jan 21 15:36:13 2019
-@authors: Emerson Boeira and Diego Eckhard
+@authors: Diego Eckhard and Emerson Boeira
 """
 """
 Testing the inversion algorithm on a MIMO system.
@@ -125,7 +125,7 @@ plt.show()
 
 #%% Calculate the input signal from the given system and the output signal
 
-uhat,tt=vrft.stbinv(A,B,C,D,y,t)
+uhat,tt,_=vrft.stbinv(A,B,C,D,y,t)
 
 # plotting the calculated output
 plt.figure()
