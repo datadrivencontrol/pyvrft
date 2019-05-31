@@ -25,6 +25,10 @@ def filter(G,u):
     Outputs description:
         y: Output data matrix. The dimension of y is (N,n), where N is the data length and n is the number of outputs of the system.'''
         
+    # testing the type of G set by the user and converting it to list 
+    if isinstance(G,signal.ltisys.TransferFunctionDiscrete):
+        G=[[G]]
+    
     # number of outputs
     n=len(G)
     # number of inputs
@@ -54,7 +58,7 @@ def colfilter(G,u):
     
     Outputs description:
         y: filtered data matrix. The dimension of y is (N,x).'''
-       
+        
     # preallocating the output matrix
     y=np.zeros((np.shape(u)))
     # test if the transfer function is not zero
@@ -83,6 +87,17 @@ def design(u,y,y_iv,Td,C,L):
         
     Outputs description:
         p: controller parameters obtained by the VRFT method.'''
+    
+    # Tests for the SISO scenario:    
+    # testing the type of Td set by the user and converting it to list 
+    if isinstance(Td,signal.ltisys.TransferFunctionDiscrete):
+        Td=[[Td]]
+    # testing the type of L set by the user and converting it to list 
+    if isinstance(L,signal.ltisys.TransferFunctionDiscrete):
+        L=[[L]]
+    # testing the type of L set by the user and converting it to list 
+    if isinstance(C[0][0],signal.ltisys.TransferFunctionDiscrete):
+        C=[[C]]
         
     # number of data samples/ data length
     N=len(u)
