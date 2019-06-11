@@ -20,7 +20,7 @@ def datafromcsv(file_name, delim, row_offset, n):
     
     Inputs description:
         file_name: .csv file path;
-        delim: column delimiter on the .csv file;
+        delim: column delimiter on the .csv file, for instance ",";
         row_offset: offset to be considered on the .csv file (since the first lines could be some kind of Header of the .csv file);
         n: number of inputs and outputs of the system.
         

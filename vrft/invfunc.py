@@ -209,6 +209,8 @@ def invredc(A, B, C, D, y, v):
 def stbinv(A, B, C, D, y, t):
     # Description to help the user
     """Function that implements the algorithm for the inversion of a LTI system.
+    The output of the algorithm uhat is such that this signal, filtered by the system produces the signal y.
+    
     Inputs: A,B,C,D,y,t
     Outputs: uhat,tt,flag_vr
     

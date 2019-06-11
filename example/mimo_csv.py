@@ -21,19 +21,15 @@ offset = 5
 # number of inputs and outputs of the system to be controlled
 n = 2
 # read the data from the csv file using a function available on our package
-ya, ua = vrft.datafromcsv("data/plantdata_a.csv", ",", offset, n)
-yb, ub = vrft.datafromcsv("data/plantdata_b.csv", ",", offset, n)
+ya, ua = vrft.datafromcsv("data_a.csv", ",", offset, n)
+yb, ub = vrft.datafromcsv("data_b.csv", ",", offset, n)
 # choosing the input
 u = ua
 
-# samples of the input signal
-N = u.shape[0]
-# discrete time vector of the simulation
-t = np.linspace(0, N - 1, N)  # linspace(start,stop,numberofpoints)
 
 # plotting the input signal
 plt.figure()
-plt.step(t.T, u)
+plt.plot(u, drawstyle='steps')
 plt.grid(True)
 plt.xlabel("time (t)")
 plt.ylabel("u(t)")
@@ -41,8 +37,8 @@ plt.show()
 
 # plotting y1(t) for both experiments
 plt.figure()
-plt.step(t.T, ya[:, 0])
-plt.step(t.T, yb[:, 0])
+plt.plot(ya[:, 0], drawstyle='steps')
+plt.plot(yb[:, 0], drawstyle='steps')
 plt.grid(True)
 plt.xlabel("time (t)")
 plt.ylabel("y1(t)")
@@ -50,8 +46,8 @@ plt.show()
 
 # plotting y2(t) for both experiments
 plt.figure()
-plt.step(t.T, ya[:, 1])
-plt.step(t.T, yb[:, 1])
+plt.plot(ya[:, 1], drawstyle='steps')
+plt.plot(yb[:, 1], drawstyle='steps')
 plt.grid(True)
 plt.xlabel("time (t)")
 plt.ylabel("y2(t)")
@@ -65,20 +61,14 @@ Td12 = 0
 Td21 = 0
 Td22 = signal.TransferFunction([0.02], [1, -0.98], dt=1)
 # organizing the MIMO reference model Td(z) in a python list
-Td = [[Td11, Td12], [Td21, Td22]]
+Td = [
+      [Td11, Td12], 
+      [Td21, Td22]
+]
 
-# choosing the VRFT method filter
-# L11 = signal.TransferFunction([1],[1],dt=1)
-# L12 = 0
-# L21 = 0
-# L22 = signal.TransferFunction([1],[1],dt=1)
-# organizing the MIMO filter as a list
-# L=[[L11,L12],[L21,L22]]
-# a simple choice
 L = Td
 
 # defining the controller structure that will be used in the method
-# Cp=[[signal.TransferFunction([1],[1],dt=1)]] # proportional controller structure
 Cpi = [
     [signal.TransferFunction([1, 0], [1, -1], dt=1)],
     [signal.TransferFunction([1], [1, -1], dt=1)],
