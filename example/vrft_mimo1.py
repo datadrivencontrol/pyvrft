@@ -76,7 +76,7 @@ u2=0.5-0.5*signal.square(2*np.pi*fs*t-3*np.pi/2).T
 #u2=signal.gausspulse(t,fc=0.002).T
 # concatenating the signals
 u=np.concatenate((u1,u2),axis=1)
-#IMPORTANT: in our toolbox, we decided to organize the input and output signals as an matrix (N,n), where N=number of data samples, n=number of inputs and outputs
+#IMPORTANT: in our package, we decided to organize the input and output signals as an matrix (N,n), where N=number of data samples, n=number of inputs and outputs
 
 # plotting the input signal
 plt.figure()
