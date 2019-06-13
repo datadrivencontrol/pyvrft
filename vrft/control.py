@@ -91,7 +91,9 @@ def design(u, y, y_iv, Td, C, L):
         L: VRFT method filter. It also must be a python list of TransferFunctionDiscrete elements. The dimension of the list must be (n,n).
         
     Outputs description:
-        p: controller parameters obtained by the VRFT method."""
+        p: controller parameters obtained by the VRFT method.
+        The parameter vector p is organized as p=[p11^T p12^T ... p1n^T p21^T p22^T ... p2n^T ... pnn^T]^T.
+        Each pij represents the parameter vector of each subcontroller Cij(z,pij)."""
 
     # Tests for the SISO scenario:
     # testing the type of Td set by the user and converting it to list
