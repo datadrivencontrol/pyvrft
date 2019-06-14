@@ -8,7 +8,6 @@ Testing the vrft with data read from a .csv file
 """
 #%% Header: importing python libraries
 
-import numpy as np  # important package for scientific computing
 from scipy import signal  # signal processing library
 import matplotlib.pyplot as plt  # library to plot graphics
 import vrft  # vrft package
@@ -25,7 +24,6 @@ ya, ua = vrft.datafromcsv("data_a.csv", ",", offset, n)
 yb, ub = vrft.datafromcsv("data_b.csv", ",", offset, n)
 # choosing the input
 u = ua
-
 
 # plotting the input signal
 plt.figure()
@@ -66,6 +64,7 @@ Td = [
       [Td21, Td22]
 ]
 
+# choosing the VRFT method filter
 L = Td
 
 # defining the controller structure that will be used in the method

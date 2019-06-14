@@ -56,9 +56,6 @@ plt.xlabel("time (t)")
 plt.ylabel("y(t)")
 plt.show()
 
-
-
-
 #%% CONTROL
 
 # declaration of the transfer fuction of the reference model Td(z)

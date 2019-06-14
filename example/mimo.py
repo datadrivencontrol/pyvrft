@@ -28,7 +28,6 @@ G = [
 
 # samples of the input signal
 N = 350
-# N=10
 # discrete time vector of the simulation
 t = np.linspace(0, N - 1, N)  # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
@@ -63,7 +62,6 @@ w = np.concatenate((w1, w2), axis=1)
 # real (measured) output
 y = yu + w
 
-
 # plotting the signals
 plt.figure()
 plt.step(t.T, u)
@@ -79,9 +77,6 @@ plt.grid(True)
 plt.xlabel("time (t)")
 plt.ylabel("y(t)")
 plt.show()
-
-
-
 
 #%% CONTROL
 
@@ -117,7 +112,6 @@ C = [
      [Cpi, Cpi], 
      [Cpi, Cpi]
 ]  # in this example, we choosed a full PI controller
-
 
 # design the controller using the VRFT method
 p = vrft.design(u, y, y, Td, C, L)
