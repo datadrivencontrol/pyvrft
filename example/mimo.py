@@ -3,18 +3,19 @@
 Created on Fri Mar 29 13:24:38 2019
 @authors: Diego Eckhard and Emerson Boeira
 
-Testing the vrft function on an example
+Testing the vrft on a MIMO example with instrumental variable
 """
 #%% Header: importing python libraries
 
 import numpy as np  # important package for scientific computing
 from scipy import signal  # signal processing library
 import matplotlib.pyplot as plt  # library to plot graphics
-import vrft  # implementation of vrft
+import vrft  # vrft package
 
 #%% Simulating the open loop system to obtain the data for the VRFT
 
-# IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]. The latter generates a warning!!
+# IMPORTANT: if the numerator of the transfer function is 1, define it as num=[1], instead of num=[0,1]
+# num=[0,1] produces a warning!
 # declaration of the transfer fuctions that compose the MIMO process G(z)
 G11 = signal.TransferFunction([0.09516], [1, -0.9048], dt=1)
 G12 = signal.TransferFunction([0.03807], [1, -0.9048], dt=1)
@@ -27,58 +28,73 @@ G = [
 ]
 
 # samples of the input signal
-N = 350
-# discrete time vector of the simulation
+N = 1000
+# discrete time vector
 t = np.linspace(0, N - 1, N)  # linspace(start,stop,numberofpoints)
 # pushing the vector to have the specified dimensions
 t.shape = (1, N)
 
 # using a square wave for both inputs
 # defining the period of the square wave
-ts = N
+ts = N/2
 fs = 1 / ts
 # finally, defining the square wave using the function signal.square()
 u1 = 0.5 - 0.5 * signal.square(2 * np.pi * fs * t).T
 u2 = 0.5 - 0.5 * signal.square(2 * np.pi * fs * t - 3 * np.pi / 2).T
 
-# concatenating the signals
+# concatenating signals
 u = np.concatenate((u1, u2), axis=1)
-# IMPORTANT: in our package, we decided to organize the input and output signals as an matrix (N,n), where N=number of data samples, n=number of inputs and outputs
+# IMPORTANT: in our package, we decided to organize the input and output signals as a matrix (N,n)
+# N=number of data samples, n=number of inputs and outputs
 
 # calculating the output of the MIMO system
 yu = vrft.filter(G, u)
 # add noise to the output
-# variance of the whie noise signals (in this example we choose sigma2=0, i.e. we dont have any noise)
-sigma2_e1 = 0.001
-sigma2_e2 = 0.001
-# creating noise vectors
-w1 = np.random.normal(0, np.sqrt(sigma2_e1), N)
-w2 = np.random.normal(0, np.sqrt(sigma2_e2), N)
+# variance of the whie noise
+sigma2_e1 = 0.0001
+sigma2_e2 = 0.0001
+# creating noise vectors for each experiment
+# noise of the first experiment
+w1a = np.random.normal(0, np.sqrt(sigma2_e1), N)
+w2a = np.random.normal(0, np.sqrt(sigma2_e2), N)
+# noise of the second experiment
+w1b = np.random.normal(0, np.sqrt(sigma2_e1), N)
+w2b = np.random.normal(0, np.sqrt(sigma2_e2), N)
 # pushing the dimensions to match our signals
-w1.shape = (N, 1)
-w2.shape = (N, 1)
+w1a.shape = (N, 1)
+w2a.shape = (N, 1)
+w1b.shape = (N, 1)
+w2b.shape = (N, 1)
 # concatenating noise signals
-w = np.concatenate((w1, w2), axis=1)
-# real (measured) output
-y = yu + w
+wa = np.concatenate((w1a, w2a), axis=1)
+wb = np.concatenate((w1b, w2b), axis=1)
+# real (measured) output for each experiment
+ya = yu + wa
+yb = yu + wb
 
-# plotting the signals
+# plot input signals
 plt.figure()
-plt.step(t.T, u)
+plt.plot(u, drawstyle='steps')
 plt.grid(True)
 plt.xlabel("time (t)")
 plt.ylabel("u(t)")
 plt.show()
 
-# plotting the output signal
+# plot output signal
 plt.figure()
-plt.step(t.T, y)
+plt.subplot(2,1,1)
+plt.plot(ya)
 plt.grid(True)
 plt.xlabel("time (t)")
-plt.ylabel("y(t)")
+plt.ylabel("ya(t)")
+plt.subplot(2,1,2)
+plt.plot(yb)
+plt.grid(True)
+plt.xlabel("time (t)")
+plt.ylabel("yb(t)")
 plt.show()
 
-#%% CONTROL
+#%% CONTROL - VRFT parameters: reference model Td(z), filter L(z), and controller structure
 
 # declaration of the transfer fuctions that compose the MIMO reference model Td(z)
 Td11 = signal.TransferFunction([0.25], [1, -0.75], dt=1)
@@ -92,15 +108,7 @@ Td = [
 ]
 
 # choosing the VRFT method filter
-L11 = signal.TransferFunction([0.25], [1, -0.75], dt=1)
-L12 = signal.TransferFunction([0.4], [1, -0.65], dt=1)
-L21 = signal.TransferFunction([0.1], [1, -0.75], dt=1)
-L22 = signal.TransferFunction([0.2], [1, -0.6], dt=1)
-# organizing the MIMO filter as a list
-L = [
-     [L11, L12], 
-     [L21, L22]
-]
+L = Td
 
 # defining the controller structure that will be used in the method
 Cpi = [
@@ -113,6 +121,8 @@ C = [
      [Cpi, Cpi]
 ]  # in this example, we choosed a full PI controller
 
-# design the controller using the VRFT method
-p = vrft.design(u, y, y, Td, C, L)
+#%% Design the controller using the VRFT method
+
+# VRFT with instrumental variables - using output data of both experiments
+p = vrft.design(u, ya, yb, Td, C, L)
 print("p=", p)
