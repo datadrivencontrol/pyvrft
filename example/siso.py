@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Mar  7 14:37:39 2019
+Created on Thu Mar 7 14:37:39 2019
 @authors: Diego Eckhard and Emerson Boeira
 """
 """
@@ -11,21 +11,23 @@ Testing the vrft on a SISO example
 import numpy as np  # important package for scientific computing
 from scipy import signal  # signal processing library
 import matplotlib.pyplot as plt  # library to plot graphics
-import vrft  # implementation of vrft
+import vrft  # vrft package
 
 #%% Simulating the open loop system to obtain the data for the VRFT
 
 # declaration of the SISO transfer fuction of the process G(z)
 G = signal.TransferFunction([1], [1, -0.9], dt=1)
-# IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]. The latter generates a warning!!
+# IMPORTANT: if the numerator of the transfer function is 1, for example, define it as num=[1], instead of num=[0,1]
+# num=[0,1] produces a warning!
 
 # number of samples
-N = 150
+N = 100
 
 # step signal
 u = np.ones((N,1))
 u[0] = 0
-# IMPORTANT: in our package, we decided to organize the input and output signals as an matrix (N,n), where N=number of data samples, n=number of inputs and outputs
+# IMPORTANT: in our package, we decided to organize the input and output signals as a matrix (N,n)
+# N=number of data samples, n=number of inputs and outputs
 
 # calculating the output of the system
 yu = vrft.filter(G, u)
@@ -41,7 +43,7 @@ w.shape = (N, 1)
 # real (measured) output
 y = yu + w
 
-# plotting signals
+# plot input signal
 plt.figure()
 plt.plot(u,drawstyle='steps')
 plt.grid(True)
@@ -49,6 +51,7 @@ plt.xlabel("time (t)")
 plt.ylabel("u(t)")
 plt.show()
 
+# plot output signal
 plt.figure()
 plt.plot(y,drawstyle='steps')
 plt.grid(True)
@@ -56,7 +59,7 @@ plt.xlabel("time (t)")
 plt.ylabel("y(t)")
 plt.show()
 
-#%% CONTROL
+#%% CONTROL - VRFT parameters: reference model Td(z), filter L(z), and controller structure
 
 # declaration of the transfer fuction of the reference model Td(z)
 Td = signal.TransferFunction([0.2], [1, -0.8], dt=1)
@@ -70,6 +73,8 @@ C = [
     [signal.TransferFunction([1], [1, -1], dt=1)],
 ]  # PI controller structure
 
-# design the controller using the VRFT method
+#%% Design the controller using the VRFT method
+
+# VRFT with least squares
 p = vrft.design(u, y, y, Td, C, L)
 print("p=", p)
