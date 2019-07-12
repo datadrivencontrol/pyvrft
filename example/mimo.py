@@ -36,7 +36,7 @@ t.shape = (1, N)
 
 # using a square wave for both inputs
 # defining the period of the square wave
-ts = N/2
+ts = N / 2
 fs = 1 / ts
 # finally, defining the square wave using the function signal.square()
 u1 = 0.5 - 0.5 * signal.square(2 * np.pi * fs * t).T
@@ -51,8 +51,8 @@ u = np.concatenate((u1, u2), axis=1)
 yu = vrft.filter(G, u)
 # add noise to the output
 # variance of the whie noise
-sigma2_e1 = 0.0001
-sigma2_e2 = 0.0001
+sigma2_e1 = 0.001
+sigma2_e2 = 0.001
 # creating noise vectors for each experiment
 # noise of the first experiment
 w1a = np.random.normal(0, np.sqrt(sigma2_e1), N)
@@ -72,29 +72,44 @@ wb = np.concatenate((w1b, w2b), axis=1)
 ya = yu + wa
 yb = yu + wb
 
+#%% Graphics
+
+# linwidth
+lw = 1.5
+
 # plot input signals
 plt.figure()
-plt.plot(u, drawstyle='steps')
+plt.plot(u[:, 0], "b", drawstyle="steps", linewidth=lw, label="u1(t)")
+plt.plot(u[:, 1], "r", drawstyle="steps", linewidth=lw, label="u2(t)")
 plt.grid(True)
-plt.xlabel("time (t)")
+plt.xlabel("time (samples)")
 plt.ylabel("u(t)")
+plt.xlim(left=0, right=N)
+plt.legend(loc="upper left")
+# plt.savefig('u_sim.eps', format = 'eps', dpi=600)
 plt.show()
 
 # plot output signal
 plt.figure()
-plt.subplot(2,1,1)
-plt.plot(ya)
+plt.subplot(2, 1, 1)
+plt.plot(ya[:, 0], "b", drawstyle="steps", linewidth=lw, label="y1a(t)")
+plt.plot(ya[:, 1], "r", drawstyle="steps", linewidth=lw, label="y2a(t)")
 plt.grid(True)
-plt.xlabel("time (t)")
 plt.ylabel("ya(t)")
-plt.subplot(2,1,2)
-plt.plot(yb)
+plt.xlim(left=0, right=N)
+plt.legend(loc="upper left")
+plt.subplot(2, 1, 2)
+plt.plot(yb[:, 0], "b", drawstyle="steps", linewidth=lw, label="y1b(t)")
+plt.plot(yb[:, 1], "r", drawstyle="steps", linewidth=lw, label="y2b(t)")
 plt.grid(True)
-plt.xlabel("time (t)")
+plt.xlabel("time (samples)")
 plt.ylabel("yb(t)")
+plt.xlim(left=0, right=N)
+plt.legend(loc="upper left")
+# plt.savefig('y_sim.eps',format='eps',dpi=600)
 plt.show()
 
-#%% CONTROL - VRFT parameters: reference model Td(z), filter L(z), and controller structure
+#%% Control - VRFT parameters: reference model Td(z), filter L(z), and controller structure
 
 # declaration of the transfer fuctions that compose the MIMO reference model Td(z)
 Td11 = signal.TransferFunction([0.25], [1, -0.75], dt=1)

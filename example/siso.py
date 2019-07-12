@@ -24,7 +24,7 @@ G = signal.TransferFunction([1], [1, -0.9], dt=1)
 N = 100
 
 # step signal
-u = np.ones((N,1))
+u = np.ones((N, 1))
 u[0] = 0
 # IMPORTANT: in our package, we decided to organize the input and output signals as a matrix (N,n)
 # N=number of data samples, n=number of inputs and outputs
@@ -43,23 +43,29 @@ w.shape = (N, 1)
 # real (measured) output
 y = yu + w
 
+#%% Graphics
+
+lw=1.5 # linewidth
+
 # plot input signal
 plt.figure()
-plt.plot(u,drawstyle='steps')
+plt.plot(u, "b", drawstyle="steps", linewidth=lw, label="u(t)")
 plt.grid(True)
-plt.xlabel("time (t)")
+plt.xlabel("time (samples)")
 plt.ylabel("u(t)")
+plt.xlim(left=-2, right=N)
 plt.show()
 
 # plot output signal
 plt.figure()
-plt.plot(y,drawstyle='steps')
+plt.plot(y, "b", drawstyle="steps", linewidth=lw, label="u(t)")
 plt.grid(True)
-plt.xlabel("time (t)")
+plt.xlabel("time (samples)")
 plt.ylabel("y(t)")
+plt.xlim(left=-2, right=N)
 plt.show()
 
-#%% CONTROL - VRFT parameters: reference model Td(z), filter L(z), and controller structure
+#%% Control - VRFT parameters: reference model Td(z), filter L(z), and controller structure
 
 # declaration of the transfer fuction of the reference model Td(z)
 Td = signal.TransferFunction([0.2], [1, -0.8], dt=1)
