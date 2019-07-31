@@ -81,7 +81,7 @@ Td = [
       [Td21, Td22]
 ]
 
-# choosing the VRFT method filter L=Td*(Td-I)
+# choosing the VRFT method filter L=Td*(I-Td)
 L11 = signal.TransferFunction([-0.03, 0.03], [1, -1.94, 0.9409], dt=1)
 L12 = 0
 L21 = 0
