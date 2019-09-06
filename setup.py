@@ -5,7 +5,7 @@ setup(
     version='0.1',
     description='Virtual Reference Feedback Tuning',
     packages=['vrft'],
-    install_requires=['numpy','scipy'],
+    install_requires=['numpy','scipy','matplotlib'],
     author='Diego Eckhard',
     author_email='diego@eckhard.com.br',
     url='http://github.com/datadrivencontrol/pyvrft',
