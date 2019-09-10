@@ -1,4 +1,4 @@
-Copyright (c) 2018 Diego Eckhard
+Copyright (c) 2018 Diego Eckhard and Emerson Christ Boeira 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
