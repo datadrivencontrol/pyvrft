@@ -7,7 +7,7 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     
 setup(
     name='pyvrft',
-    version='1.0',
+    version='1.1',
     description='Virtual Reference Feedback Tuning',
     long_description=long_description,
     long_description_content_type='text/markdown',

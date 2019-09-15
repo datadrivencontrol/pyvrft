@@ -11,7 +11,9 @@ The toolbox implements both SISO and MIMO controllers, using standard least-squa
 
 Use PIP to install:
 
+```bash
 pip install pyvrft
+```
 
 ## Use
 
