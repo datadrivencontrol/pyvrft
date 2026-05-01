@@ -27,7 +27,12 @@ def filter(G, u):
         y: Output data matrix. The dimension of y is (N,n), where N is the data length and n is the number of outputs of the system."""
 
     # testing the type of G set by the user and converting it to list
-    if isinstance(G, signal.ltisys.TransferFunctionDiscrete):
+    try:
+        DiscreteClass = signal.ltisys.TransferFunctionDiscrete
+    except AttributeError:
+        DiscreteClass = signal.dlti
+
+    if isinstance(G, DiscreteClass):
         G = [[G]]
 
     # number of outputs
@@ -96,14 +101,18 @@ def design(u, y, y_iv, Td, C, L):
         Each pij represents the parameter vector of each subcontroller Cij(z,pij)."""
 
     # Tests for the SISO scenario:
+    try:
+        DiscreteClass = signal.ltisys.TransferFunctionDiscrete
+    except AttributeError:
+        DiscreteClass = signal.dlti
     # testing the type of Td set by the user and converting it to list
-    if isinstance(Td, signal.ltisys.TransferFunctionDiscrete):
+    if isinstance(Td, DiscreteClass):
         Td = [[Td]]
     # testing the type of L set by the user and converting it to list
-    if isinstance(L, signal.ltisys.TransferFunctionDiscrete):
+    if isinstance(L, DiscreteClass):
         L = [[L]]
     # testing the type of L set by the user and converting it to list
-    if isinstance(C[0][0], signal.ltisys.TransferFunctionDiscrete):
+    if isinstance(C[0][0], DiscreteClass):
         C = [[C]]
 
     # number of data samples/ data length
