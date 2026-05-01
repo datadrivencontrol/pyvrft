@@ -238,6 +238,8 @@ def stbinv(A, B, C, D, y, t):
     # calculate system's dimensions: number of states and number of inputs
     m = B.shape[1]  # number of inputs
     n = A.shape[0]  # number of states
+    p = C.shape[0]  # number of outputs
+    r = np.linalg.matrix_rank(D)
 
     # initialize the variable v (additional input)
     v = np.zeros((n, N))  # it will be important later
@@ -251,53 +253,46 @@ def stbinv(A, B, C, D, y, t):
 
     # starting the loop of the reduction procedure
     while flag == 0:
-        # run a step of the reduction order algorithm
-        Ahat, Bhat, Chat, Dhat, yhat, vhat, nhat, phat, rhat = invredc(A, B, C, D, y, v)
-        # increase the counter of reductions
-        kround = kround + 1
-
-        # preallocating the state vector of the inverse system
-        xhat = np.zeros((nhat, N - kround))  # it must have N-kround samples
-        # preallocating the calculated input
-        uhat = np.zeros((m, N - kround))
-
-        # defining the reduced time vector
-        tt = t[:, 0 : N - kround]
 
         # test the conditions of invertibility
-        if phat < m:
+        if p < m:
             # if this condition is true, then the algorithm has failed and it is not possible to find the inverse
             flag = 1
             flag_vr = 1
             # if this is the case, we print a message and end the execution
-            # print('The inversion algorithm has failed')
+            print('The inversion algorithm has failed')
             return uhat, tt, flag_vr
         else:
-            if rhat == m:
+            if r == m:
                 # ((rhat==m)&(rhat==phat)):
                 # if this condition is true, then the algorithm is done. We can calculate the signal u
                 flag = 2
                 # calculating the inverse of the feedforward matrix
                 # E=np.linalg.inv(Dhat)
-                E = np.linalg.pinv(Dhat)
+                E = np.linalg.pinv(D)
             else:
-                # if none of the conditions above is true, then we need to proceed to another round of the reduction step of the algorithm
-                A = Ahat
-                B = Bhat
-                C = Chat
-                D = Dhat
-                y = yhat
-                v = vhat
-                # after the reduction procedure is done, then the system can be inverted
+                # if none of the conditions above is true, we can proceed to perform the reduction step of the algorithm
+                # run a step of the reduction order algorithm
+                A, B, C, D, y, v, n, p, r = invredc(A, B, C, D, y, v)
+                # increase the counter of reductions
+                kround = kround + 1
+                
+
+    # preallocating the state vector of the inverse system
+    xhat = np.zeros((n, N - kround))  # it must have N-kround samples
+    # preallocating the calculated input
+    uhat = np.zeros((m, N - kround))
+    # defining the reduced time vector
+    tt = t[:, 0 : N - kround]
 
     # calculating the dynamic matrix of the inverse system
-    Ainv = Ahat - Bhat @ E @ Chat
+    Ainv = A - B @ E @ C
     # eigenvalues of the inverse system's dynamic matrix
-    wv, v = np.linalg.eig(Ainv)  # w=eigenvalues, v=eigenvectors
+    wv, _ = np.linalg.eig(Ainv)  # w=eigenvalues, v=eigenvectors
     # calculating the input matrix of the inverse system
-    Binv = Bhat @ E
+    Binv = B @ E
     # calculating the output matrix of the inverse system
-    Cinv = -E @ Chat
+    Cinv = -E @ C
     # calculating the feedforward matrix of the inverse system
     Dinv = E
 
@@ -307,17 +302,17 @@ def stbinv(A, B, C, D, y, t):
     # test if wsum is greater than 1
     if wsum > 0:
         # if wsum is greater than 1, then, the inverse system is unstable, so we end the execution of the algorithm
-        # print('The inverse system is unstable')
+        print('The inverse system is unstable')
         flag_vr = 2
         return uhat, tt, flag_vr
     else:
         # if wsum=0, then the inverse system is stable, and we can calculate the input signal
         # calculate the first value for the output (t=0)
-        uhat[:, 0] = Cinv @ xhat[:, 0] + Dinv @ yhat[:, 0]
+        uhat[:, 0] = Cinv @ xhat[:, 0] + Dinv @ y[:, 0]
         # calculate the states and the output of the inverse system
         for k in range(0, N - 1 - kround):
-            xhat[:, k + 1] = Ainv @ xhat[:, k] + Binv @ yhat[:, k] + vhat[:, k]
-            uhat[:, k + 1] = Cinv @ xhat[:, k + 1] + Dinv @ yhat[:, k + 1]
+            xhat[:, k + 1] = Ainv @ xhat[:, k] + Binv @ y[:, k] + v[:, k]
+            uhat[:, k + 1] = Cinv @ xhat[:, k + 1] + Dinv @ y[:, k + 1]
 
     return uhat, tt, flag_vr
 
