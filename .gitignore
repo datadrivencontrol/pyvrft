@@ -9,3 +9,7 @@
 
 # Python Cache
 __pycache__
+
+# virtual environment
+venv
+.venv
