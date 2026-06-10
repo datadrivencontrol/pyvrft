@@ -45,3 +45,5 @@ For citation guidance, see <https://pyvrft.net/citation/>.
 Diego Eckhard - diegoeck@ufrgs.br - @diegoeck
 
 Emerson Christ Boeira - emerson.boeira@ufrgs.br - @emersonboeira
+
+Lara Colognese de Almeida - lara.almeida@ufrgs.br - @lara-ca
